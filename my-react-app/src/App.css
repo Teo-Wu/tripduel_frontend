@@ -1,0 +1,84 @@
+/* App.css */
+
+/* Center the app container */
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+  font-family: Arial, sans-serif;
+  background-color: #f9f9f9;
+  min-height: 100vh;
+}
+
+/* Navigation Bar */
+nav {
+  display: flex;
+  justify-content: center;
+  gap: 2rem; /* space between links */
+  margin-bottom: 2rem;
+  background-color: #007bff;
+  padding: 1rem 0;
+  border-radius: 8px;
+}
+
+nav a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: bold;
+  padding: 0.5rem 1rem;
+  transition: background-color 0.3s, color 0.3s;
+  border-radius: 4px;
+}
+
+nav a:hover {
+  background-color: #0056b3;
+  color: #fff;
+}
+
+/* Page Styles */
+h1 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+/* Login Page */
+input[type="text"],
+input[type="password"] {
+  padding: 0.5rem;
+  margin: 0.5rem 0;
+  width: 250px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+button {
+  padding: 0.6rem 1.2rem;
+  margin-top: 1rem;
+  border: none;
+  border-radius: 4px;
+  background-color: #28a745;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #218838;
+}
+
+p {
+  color: red;
+  font-weight: bold;
+  margin-top: 0.5rem;
+}
+
+/* Optional: center login form */
+div > input,
+div > button {
+  display: block;
+  margin: 0.5rem auto;
+}
