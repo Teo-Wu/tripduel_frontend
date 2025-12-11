@@ -16,7 +16,7 @@ This is a React frontend project built with **Vite**. It includes multiple pages
 ### 1. Clone the repository
 
 ```bash
-git clone https://gitlab.rn.inf.tu-dresden.de/scc/scc-gruppe-08/tripduel/frontend.git
+git clone git@gitlab.rn.inf.tu-dresden.de:scc/scc-gruppe-08/tripduel/frontend.git
 
 cd my-react-app
 ```
