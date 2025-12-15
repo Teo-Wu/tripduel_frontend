@@ -1,8 +1,7 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom";
 
-function LoginPage() {
-  const [username, setUsername] = useState("");
+function LoginPage({ setToken, setUsername, username}) {
   const [password, setPassword] = useState("");
   const [error, setError]=useState("");
   const [success, setSuccess] = useState("");
@@ -26,8 +25,16 @@ function LoginPage() {
       if (response.ok) {
         setError("");
         setSuccess("Logged in successfully!");
-        // Optionally redirect to another page
-        setTimeout(() => navigate("/"), 1000);
+
+          
+      // Store JWT in localStorage
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("username", data.user.username);
+      setToken(data.token)
+      setUsername(data.user.username)
+
+      // Optionally redirect to another page
+      setTimeout(() => navigate("/"), 1000);
 
       } else {
         setError(data.error || data.msg || "Registration failed");
@@ -60,4 +67,4 @@ function LoginPage() {
   )
 }
 
-export default LoginPage
+export default LoginPage;
