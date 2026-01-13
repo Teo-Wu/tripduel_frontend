@@ -1,0 +1,82 @@
+.page-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  box-sizing: border-box;
+  gap: 24px;
+  font-family: sans-serif;
+}
+
+/* ---------- TOP SECTION ---------- */
+.trips-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.trip-list {
+  margin-top: 12px;
+  flex: 1;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 12px;
+  min-height: 0;
+}
+
+.trip-card {
+  border: 1px solid #bbb;
+  border-radius: 6px;
+  padding: 10px;
+  margin-bottom: 10px;
+  background: #f9f9f9;
+}
+
+.trip-name {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.trip-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.trip-actions button {
+  padding: 4px 10px;
+  cursor: pointer;
+}
+
+/* ---------- BOTTOM SECTION ---------- */
+.actions-section {
+  display: flex;
+  gap: 40px;
+  justify-content: center;
+}
+
+.action-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.action-box input {
+  padding: 8px;
+  width: 220px;
+}
+
+.primary {
+  background-color: #0e5a74;
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.primary:hover {
+  background-color: #0b4a60;
+}

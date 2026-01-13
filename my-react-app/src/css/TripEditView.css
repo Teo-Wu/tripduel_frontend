@@ -1,0 +1,25 @@
+.trip-edit-container {
+  padding: 20px;
+}
+
+.edit-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+}
+
+.scroll-list {
+  max-height: 180px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.scroll-list button {
+  padding: 8px;
+  bordernd {
+  color: green;
+}
+}

@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
-import HomePage from "./pages/HomePage";
+import MyTripsPage from "./pages/MyTripsPage";
 import ProfilePage from './pages/ProfilePage';
+import TripEditView from "./pages/TripEditView";
+
 import { BrowserRouter, Routes, Route, Link} from "react-router-dom"
 import "./App.css"
 
@@ -15,10 +17,11 @@ return (
   <BrowserRouter>
   <nav className="navbar">
   <div className="nav-left">
-    <Link to="/">Home</Link>
+
     { !token && <Link to="/register">Register</Link> }
     { !token && <Link to="/login">Login</Link> }
     { token && <Link to="/profile">Profile</Link> }
+    { token && <Link to="/mytrips">MyTrips</Link> } 
   </div>
 
   { token && 
@@ -40,13 +43,23 @@ return (
 
 
     <Routes>
-      <Route path="/"element= {<HomePage/>} />
+      <Route path="/mytrips"element= {token ? <MyTripsPage/> :<LoginPage setToken={setToken} setUsername={setUsername} username={username}/>} />
       <Route path="/register"element= {<RegisterPage/>} />   
       // token/setToken are passed as prop
       // so if App updates token via setToken, ProfilePage immediately receives new token
       <Route path="/login"element= {<LoginPage setToken={setToken} setUsername={setUsername} username={username}/>} />  
-      <Route path="/profile"element={ token ? <ProfilePage token={token}/> : <LoginPage setToken={setToken}/> } />
-
+      <Route path="/profile"element={ token ? <ProfilePage token={token}/> :<LoginPage setToken={setToken} setUsername={setUsername} username={username}/> } />
+      <Route path="/trips/:tripId/edit"  element={
+    token ? (
+      <TripEditView />
+    ) : (
+      <LoginPage
+        setToken={setToken}
+        setUsername={setUsername}
+        username={username}
+      />
+    )
+  } />
     </Routes>
   </BrowserRouter>
 )
