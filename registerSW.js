@@ -1,1 +1,1 @@
-if('serviceWorker' in navigator) {window.addEventListener('load', () => {navigator.serviceWorker.register('/my-react-app/sw.js', { scope: '/my-react-app/' })})}
+if('serviceWorker' in navigator) {window.addEventListener('load', () => {navigator.serviceWorker.register('/tripduel_frontend/sw.js', { scope: '/tripduel_frontend/' })})}
