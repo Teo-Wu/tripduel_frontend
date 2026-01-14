@@ -15,7 +15,7 @@ function LoginPage({ setToken, setUsername, username}) {
     }
 
     try {
-      const response = await fetch("http://localhost:5000/api/auth/login",{
+      const response = await fetch("https://backend-user-tripduel.onrender.com/login",{
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username,password })

@@ -14,7 +14,7 @@ function App() {
   const [username, setUsername] = useState(localStorage.getItem("username") || "");
 
 return (
-  <BrowserRouter>
+  <BrowserRouter basename="/tripduel_frontend">
   <nav className="navbar">
   <div className="nav-left">
 
