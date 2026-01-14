@@ -12,7 +12,7 @@ function ProfilePage({ token }) {
     if (!storedToken) return;
 
     // 3. Fetch user profile from backend
-    fetch("https://backend-user-tripduel.onrender.com/profile", {
+    fetch("https://backend-user-tripduel.onrender.com/api/users/profile", {
       headers: { Authorization: `Bearer ${storedToken}` }
     })
       .then(res => res.json())
