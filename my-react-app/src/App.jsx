@@ -6,13 +6,13 @@ import ProfilePage from './pages/ProfilePage';
 import TripEditView from "./pages/TripEditView";
 
 import { BrowserRouter, Routes, Route, Link} from "react-router-dom"
-import "./App.css"
+import "./css/App.css"
 
 function App() {
   // access localstorage, otherwise after reload->all state reset-> token not initialized
   const [token, setToken] = useState(localStorage.getItem("token") || "");
   const [username, setUsername] = useState(localStorage.getItem("username") || "");
-
+  
 return (
   <BrowserRouter basename="/tripduel_frontend">
   <nav className="navbar">
