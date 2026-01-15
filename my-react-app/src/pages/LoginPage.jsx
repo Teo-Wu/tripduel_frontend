@@ -13,7 +13,7 @@ function LoginPage({ setToken, setUsername, username}) {
       setSuccess("");
       return; 
     }
-
+  
     try {
       const response = await fetch("https://backend-user-tripduel.onrender.com/api/auth/login",{
         method: "POST",
