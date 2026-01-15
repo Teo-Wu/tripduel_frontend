@@ -4,17 +4,9 @@
 
 .edit-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 20px;
 }
-
-@media (max-width: 768px) {
-  .edit-grid {
-    grid-template-columns: 1fr; /* stack on mobile */
-    gap: 12px;
-  }
-}
-
 
 .scroll-list {
   max-height: 180px;
@@ -25,9 +17,64 @@
   margin-bottom: 10px;
 }
 
-.scroll-list button {
-  padding: 8px;
-  bordernd {
-  color: green;
+.scroll-list.horizontal {
+  flex-direction: row;
+  overflow-x: auto;
 }
+
+.scroll-list button {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.scroll-list button.selected {
+  background-color: #4caf50;
+  color: white;
+  border-color: #4caf50;
+}
+
+.image-panel img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  margin-bottom: 10px;
+}
+
+.notice {
+  color: #555;
+  font-style: italic;
+  margin-top: 10px;
+}
+
+.combine-btn {
+  margin-top: 10px;
+  padding: 10px 15px;
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.message {
+  margin-top: 12px;
+  color: green;
+  font-weight: bold;
+}
+
+@media (max-width: 768px) {
+  .edit-grid {
+    grid-template-columns: 1fr; /* stack on mobile */
+    gap: 12px;
+  }
+
+  .scroll-list.horizontal {
+    flex-direction: row;
+    overflow-x: auto;
+  }
 }

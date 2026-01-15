@@ -15,18 +15,19 @@ function TripEditView({ tripId }) {
 
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [confirmed, setConfirmed] = useState(false);
 
   const [newPropertyName, setNewPropertyName] = useState("");
   const [newCategoryName, setNewCategoryName] = useState("");
 
   const [message, setMessage] = useState("");
 
-  // Load image when both selections exist
+  // Load image when confirmed selection changes
   useEffect(() => {
-    if (selectedProperty && selectedCategory) {
+    if (confirmed && selectedProperty && selectedCategory) {
       loadImage(selectedProperty, selectedCategory);
     }
-  }, [selectedProperty, selectedCategory]);
+  }, [selectedProperty, selectedCategory, confirmed]);
 
   // Auto-hide message
   useEffect(() => {
@@ -57,12 +58,15 @@ function TripEditView({ tripId }) {
         {/* PROPERTY LIST */}
         <div>
           <h3>Property</h3>
-          <div className="scroll-list">
+          <div className="scroll-list horizontal">
             {properties.map((p) => (
               <button
                 key={p.id}
-                className={selectedProperty === p.id ? "selected" : ""}
-                onClick={() => setSelectedProperty(p.id)}
+                className={`property-button ${selectedProperty === p.id ? "selected" : ""}`}
+                onClick={() => {
+                  setSelectedProperty(p.id);
+                  setConfirmed(false);
+                }}
               >
                 {p.name}
               </button>
@@ -89,12 +93,15 @@ function TripEditView({ tripId }) {
         {/* CATEGORY LIST */}
         <div>
           <h3>Category</h3>
-          <div className="scroll-list">
+          <div className="scroll-list horizontal">
             {categories.map((c) => (
               <button
                 key={c.id}
-                className={selectedCategory === c.id ? "selected" : ""}
-                onClick={() => setSelectedCategory(c.id)}
+                className={`category-button ${selectedCategory === c.id ? "selected" : ""}`}
+                onClick={() => {
+                  setSelectedCategory(c.id);
+                  setConfirmed(false);
+                }}
               >
                 {c.name}
               </button>
@@ -117,22 +124,30 @@ function TripEditView({ tripId }) {
             Create new Category
           </button>
         </div>
+      </div>
 
-        {/* IMAGE */}
+      {/* Guidance / Combine */}
+      {!selectedProperty || !selectedCategory ? (
+        <p className="notice">
+          Please select <strong>one Property</strong> and <strong>one Category</strong> to upload an image.
+        </p>
+      ) : !confirmed ? (
+        <button className="combine-btn" onClick={() => setConfirmed(true)}>
+          Show Upload Panel for this combination
+        </button>
+      ) : null}
+
+      {/* IMAGE UPLOAD PANEL */}
+      {confirmed && selectedProperty && selectedCategory && (
         <div className="image-panel">
           {image ? (
             <img src={image.url} alt="Uploaded" />
           ) : (
             <p>No image for this selection</p>
           )}
-
-          <input
-            type="file"
-            disabled={!selectedProperty || !selectedCategory}
-            onChange={handleUpload}
-          />
+          <input type="file" onChange={handleUpload} />
         </div>
-      </div>
+      )}
 
       {message && <p className="message">{message}</p>}
     </div>
