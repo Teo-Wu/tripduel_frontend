@@ -8,6 +8,14 @@
   gap: 20px;
 }
 
+@media (max-width: 768px) {
+  .edit-grid {
+    grid-template-columns: 1fr; /* stack on mobile */
+    gap: 12px;
+  }
+}
+
+
 .scroll-list {
   max-height: 180px;
   overflow-y: auto;

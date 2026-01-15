@@ -1,14 +1,16 @@
-/* App.css */
+/* -------------------- App.css -------------------- */
 
-/* Center the app container */
+/* Root container */
 #root {
-  max-width: 1280px;
+  width: 90%;               /* fluid width for mobile */
+  max-width: 1280px;        /* desktop max */
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
   font-family: Arial, sans-serif;
   background-color: #f9f9f9;
   min-height: 100vh;
+  box-sizing: border-box;
 }
 
 /* Navigation Bar */
@@ -20,6 +22,7 @@ nav {
   background-color: #007bff;
   padding: 1rem 0;
   border-radius: 8px;
+  flex-wrap: wrap; /* wrap links on small screens */
 }
 
 nav a {
@@ -76,9 +79,43 @@ p {
   margin-top: 0.5rem;
 }
 
-/* Optional: center login form */
+/* Center login form */
 div > input,
 div > button {
   display: block;
   margin: 0.5rem auto;
+}
+
+/* -------------------- MOBILE RESPONSIVE -------------------- */
+@media (max-width: 768px) {
+  /* Reduce root padding */
+  #root {
+    padding: 1rem;
+  }
+
+  /* Smaller headings */
+  h1 {
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  /* Inputs full width */
+  input[type="text"],
+  input[type="password"] {
+    width: 90%;
+    max-width: 250px;
+  }
+
+  /* Buttons full width */
+  button {
+    width: 90%;
+    max-width: 220px;
+  }
+
+  /* Navigation: stack links vertically */
+  nav {
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+  }
 }

@@ -57,6 +57,14 @@
   justify-content: center;
 }
 
+@media (max-width: 768px) {
+  .actions-section {
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+  }
+}
+
 .action-box {
   display: flex;
   flex-direction: column;
@@ -65,8 +73,11 @@
 
 .action-box input {
   padding: 8px;
-  width: 220px;
+  width: 100%;
+  max-width: 220px; /* keeps desktop look */
+  box-sizing: border-box;
 }
+
 
 .primary {
   background-color: #0e5a74;
