@@ -52,9 +52,13 @@ function MyTripsPage() {
                 <button onClick={() => navigate(`/trips/${trip.id}/edit`)}>
                 Edit
                 </button>
-                <button>Rank</button>
-                <button>Result</button>
-                  <button
+                <button onClick={() => navigate(`/trips/${trip.id}/rank`)}> 
+                Rank
+                </button>
+                <button onClick={() => navigate(`/trips/${trip.id}/result`)}>
+                Result
+                </button>
+                <button
                 onClick={() => navigator.clipboard.writeText(trip.id)}
             >
             Copy ID

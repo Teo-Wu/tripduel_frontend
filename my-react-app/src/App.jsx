@@ -4,7 +4,9 @@ import RegisterPage from "./pages/RegisterPage";
 import MyTripsPage from "./pages/MyTripsPage";
 import ProfilePage from './pages/ProfilePage';
 import TripEditView from "./pages/TripEditView";
-
+import TripRankingPage from "./pages/TripRankingPage";
+import TripResultPage from "./pages/TripResultPage";
+import Mack from './pages/Mack';
 import { HashRouter, Routes, Route, Link } from "react-router-dom"
 import "./css/App.css"
 
@@ -20,6 +22,7 @@ function App() {
           { !token && <Link to="/login">Login</Link> }
           { token && <Link to="/profile">Profile</Link> }
           { token && <Link to="/mytrips">MyTrips</Link> } 
+          { token && <Link to="/mack">m</Link> } 
         </div>
 
         { token && 
@@ -53,6 +56,9 @@ function App() {
         <Route path="/login" element={<LoginPage setToken={setToken} setUsername={setUsername} username={username}/>} />
         <Route path="/profile" element={ token ? <ProfilePage token={token}/> : <LoginPage setToken={setToken} setUsername={setUsername} username={username}/> } />
         <Route path="/trips/:tripId/edit" element={ token ? <TripEditView /> : <LoginPage setToken={setToken} setUsername={setUsername} username={username}/> } />
+        <Route path="/trips/:tripId/rank"element={ token ? <TripRankingPage /> : <LoginPage setToken={setToken} setUsername={setUsername} username={username}/> } />
+        <Route path="/trips/:tripId/result"element={ token ? <TripResultPage /> : <LoginPage setToken={setToken} setUsername={setUsername} username={username}/> } />
+        <Route path="/mack" element={<Mack/>} />
       </Routes>
     </HashRouter>
   )

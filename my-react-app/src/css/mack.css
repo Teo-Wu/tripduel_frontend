@@ -1,0 +1,82 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+}
+
+.container {
+  display: flex;
+  height: 100vh;
+}
+
+.list-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #eee;
+}
+
+h3 {
+  margin: 8px;
+  text-align: center;
+}
+
+.scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.list-item {
+  padding: 10px;
+  background: #f4f4f4;
+  margin-bottom: 6px;
+  border-radius: 6px;
+}
+
+.add-btn {
+  border: none;
+  padding: 12px;
+  background: #007bff;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* Modal */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal {
+  background: white;
+  padding: 16px;
+  width: 90%;
+  max-width: 320px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.modal input {
+  padding: 10px;
+  font-size: 16px;
+}
+
+.modal button {
+  padding: 10px;
+  font-size: 16px;
+}
+
+.cancel {
+  background: #ddd;
+}

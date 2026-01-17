@@ -20,16 +20,17 @@ function TripEditView({ tripId }) {
   const [newPropertyName, setNewPropertyName] = useState("");
   const [newCategoryName, setNewCategoryName] = useState("");
 
+  const [showPropertyModal, setShowPropertyModal] = useState(false);
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+
   const [message, setMessage] = useState("");
 
-  // Load image when confirmed selection changes
   useEffect(() => {
     if (confirmed && selectedProperty && selectedCategory) {
       loadImage(selectedProperty, selectedCategory);
     }
   }, [selectedProperty, selectedCategory, confirmed]);
 
-  // Auto-hide message
   useEffect(() => {
     if (!message) return;
     const t = setTimeout(() => setMessage(""), 3000);
@@ -55,81 +56,64 @@ function TripEditView({ tripId }) {
       <h2>Trip Edit View</h2>
 
       <div className="edit-grid">
-        {/* PROPERTY LIST */}
-        <div>
+        {/* PROPERTY */}
+        <div className="list-card">
           <h3>Property</h3>
-          <div className="scroll-list horizontal">
+
+          <div className="scroll-area">
             {properties.map((p) => (
-              <button
+              <div
                 key={p.id}
-                className={`property-button ${selectedProperty === p.id ? "selected" : ""}`}
+                className={`list-item ${
+                  selectedProperty === p.id ? "selected" : ""
+                }`}
                 onClick={() => {
                   setSelectedProperty(p.id);
                   setConfirmed(false);
                 }}
               >
                 {p.name}
-              </button>
+              </div>
             ))}
           </div>
 
-          <input
-            placeholder="Enter new Property"
-            value={newPropertyName}
-            onChange={(e) => setNewPropertyName(e.target.value)}
-          />
-          <button
-            onClick={async () => {
-              if (!newPropertyName) return;
-              await createProperty(newPropertyName);
-              setNewPropertyName("");
-              setMessage("Property created");
-            }}
-          >
-            Create new Property
+          <button className="add-btn" onClick={() => setShowPropertyModal(true)}>
+            + Add Property
           </button>
         </div>
 
-        {/* CATEGORY LIST */}
-        <div>
+        {/* CATEGORY */}
+        <div className="list-card">
           <h3>Category</h3>
-          <div className="scroll-list horizontal">
+
+          <div className="scroll-area">
             {categories.map((c) => (
-              <button
+              <div
                 key={c.id}
-                className={`category-button ${selectedCategory === c.id ? "selected" : ""}`}
+                className={`list-item ${
+                  selectedCategory === c.id ? "selected" : ""
+                }`}
                 onClick={() => {
                   setSelectedCategory(c.id);
                   setConfirmed(false);
                 }}
               >
                 {c.name}
-              </button>
+              </div>
             ))}
           </div>
 
-          <input
-            placeholder="Enter new Category"
-            value={newCategoryName}
-            onChange={(e) => setNewCategoryName(e.target.value)}
-          />
-          <button
-            onClick={async () => {
-              if (!newCategoryName) return;
-              await createCategory(newCategoryName);
-              setNewCategoryName("");
-              setMessage("Category created");
-            }}
-          >
-            Create new Category
+          <button className="add-btn" onClick={() => setShowCategoryModal(true)}>
+            + Add Category
           </button>
         </div>
       </div>
 
-      {/* Guidance / Combine */}
+      {/* GUIDANCE */}
       {!selectedProperty || !selectedCategory ? (
         <p className="notice">
-          Please select <strong>one Property</strong> and <strong>one Category</strong> to upload an image.
+          Please select <strong>one Property</strong> and{" "}
+          <strong>one Category</strong> to upload an image.
         </p>
       ) : !confirmed ? (
         <button className="combine-btn" onClick={() => setConfirmed(true)}>
@@ -137,7 +121,7 @@ function TripEditView({ tripId }) {
         </button>
       ) : null}
 
-      {/* IMAGE UPLOAD PANEL */}
+      {/* IMAGE PANEL */}
       {confirmed && selectedProperty && selectedCategory && (
         <div className="image-panel">
           {image ? (
@@ -150,6 +134,70 @@ function TripEditView({ tripId }) {
       )}
 
       {message && <p className="message">{message}</p>}
+
+      {/* PROPERTY MODAL */}
+      {showPropertyModal && (
+        <div className="modal-backdrop">
+          <div className="modal">
+            <h4>New Property</h4>
+            <input
+              autoFocus
+              placeholder="Enter property name"
+              value={newPropertyName}
+              onChange={(e) => setNewPropertyName(e.target.value)}
+            />
+            <button
+              onClick={async () => {
+                if (!newPropertyName) return;
+                await createProperty(newPropertyName);
+                setNewPropertyName("");
+                setShowPropertyModal(false);
+                setMessage("Property created");
+              }}
+            >
+              Add
+            </button>
+            <button
+              className="cancel"
+              onClick={() => setShowPropertyModal(false)}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* CATEGORY MODAL */}
+      {showCategoryModal && (
+        <div className="modal-backdrop">
+          <div className="modal">
+            <h4>New Category</h4>
+            <input
+              autoFocus
+              placeholder="Enter category name"
+              value={newCategoryName}
+              onChange={(e) => setNewCategoryName(e.target.value)}
+            />
+            <button
+              onClick={async () => {
+                if (!newCategoryName) return;
+                await createCategory(newCategoryName);
+                setNewCategoryName("");
+                setShowCategoryModal(false);
+                setMessage("Category created");
+              }}
+            >
+              Add
+            </button>
+            <button
+              className="cancel"
+              onClick={() => setShowCategoryModal(false)}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
