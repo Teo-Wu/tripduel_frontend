@@ -1,75 +1,110 @@
-import { useState, useEffect } from "react";
-import { useTrips } from "../hooks/useTrips";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  createTrip,
+  joinTrip,
+  getMyTrips,
+  deleteTrip,
+} from "../services/tripsService"; // adjust path
 import "../css/MyTripsPage.css";
 
 function MyTripsPage() {
-  const { trips, createTrip, joinTrip,error} = useTrips();
+  const [trips, setTrips] = useState([]);
   const [tripName, setTripName] = useState("");
   const [tripId, setTripId] = useState("");
-  const [message, setMessage] = useState(""); // <-- shared message for all cases
+  const [searchTerm, setSearchTerm] = useState("");
+  const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
-  const handleJoinTrip = async () => {
-    // 1️⃣ Check if already joined
-    if (trips.some((t) => t.id === tripId)) {
-      setMessage("Already joined");
-      return;
-    }
+  // Load my trips from mock backend
+  const loadTrips = async () => {
+    const data = await getMyTrips();
+    setTrips(data);
+  };
 
+  useEffect(() => {
+    loadTrips();
+  }, []);
+
+  const filteredTrips = useMemo(() => {
+    return trips.filter((t) =>
+      t.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [trips, searchTerm]);
+
+  const handleCreateTrip = async () => {
+    if (!tripName) return;
+    await createTrip(tripName);
+    setTripName("");
+    setMessage("Trip created");
+    loadTrips();
+  };
+
+  const handleJoinTrip = async () => {
+    if (!tripId) return;
     try {
       await joinTrip(tripId);
-      setMessage("Joined successfully"); // 3️⃣ success
+      setMessage("Joined successfully");
       setTripId("");
+      loadTrips();
     } catch (err) {
-      setMessage(err); // 2️⃣ trip not found (or any service error)
+      setMessage(err.toString());
     }
-    
   };
-    // Auto-clear message after 3 seconds
+
+  const handleDeleteTrip = async (id) => {
+    if (!window.confirm("Delete this trip?")) return;
+    await deleteTrip(id);
+    setMessage("Trip deleted");
+    loadTrips();
+  };
+
+  // Auto-clear message
   useEffect(() => {
-    if (!message) return; // do nothing if no message
-
-    const timer = setTimeout(() => {
-      setMessage(""); // clear message
-    }, 1000); // 3000ms = 3 seconds
-
-    return () => clearTimeout(timer); // cleanup if message changes
+    if (!message) return;
+    const timer = setTimeout(() => setMessage(""), 3000);
+    return () => clearTimeout(timer);
   }, [message]);
+
   return (
     <div className="page-container">
-      {/* My Trips */}
-      <div className="trips-section">
-        <h2>My Trips</h2>
+      <h2>My Trips</h2>
+      <input
+        className="search-input"
+        placeholder="Search trips..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
 
-        <div className="trip-list">
-          {trips.length === 0 && <p>No trips yet</p>}
-
-          {trips.map((trip) => (
-            <div key={trip.id} className="trip-card">
-              <strong>{trip.name}</strong>
-         <div className="trip-actions">
-                <button onClick={() => navigate(`/trips/${trip.id}/edit`)}>
+      <div className="trip-list">
+        {filteredTrips.length === 0 && <p>No trips found</p>}
+        {filteredTrips.map((trip) => (
+          <div key={trip.id} className="trip-card">
+            <strong>{trip.name}</strong>
+            <div className="trip-actions">
+              <button onClick={() => navigate(`/trips/${trip.id}/edit`)}>
                 Edit
-                </button>
-                <button onClick={() => navigate(`/trips/${trip.id}/rank`)}> 
+              </button>
+              <button onClick={() => navigate(`/trips/${trip.id}/rank`)}>
                 Rank
-                </button>
-                <button onClick={() => navigate(`/trips/${trip.id}/result`)}>
+              </button>
+              <button onClick={() => navigate(`/trips/${trip.id}/result`)}>
                 Result
-                </button>
-                <button
-                onClick={() => navigator.clipboard.writeText(trip.id)}
-            >
-            Copy ID
-            </button>
-              </div>
+              </button>
+              <button onClick={() => navigator.clipboard.writeText(trip.id)}>
+                Copy ID
+              </button>
+              <button
+                className="delete-btn"
+                onClick={() => handleDeleteTrip(trip.id)}
+              >
+                x
+              </button>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
 
-      {/* Actions */}
       <div className="actions-section">
         <div className="action-box">
           <input
@@ -77,13 +112,7 @@ function MyTripsPage() {
             value={tripName}
             onChange={(e) => setTripName(e.target.value)}
           />
-          <button
-            className="primary"
-            onClick={() => {
-              createTrip(tripName);
-              setTripName("");
-            }}
-          >
+          <button className="primary" onClick={handleCreateTrip}>
             Create Trip
           </button>
         </div>
@@ -94,32 +123,23 @@ function MyTripsPage() {
             value={tripId}
             onChange={(e) => setTripId(e.target.value)}
           />
-          <button
-            className="primary"
-            onClick={() => {
-              handleJoinTrip();
-              joinTrip(tripId);
-              setTripId("");
-            }}
-          >
+          <button className="primary" onClick={handleJoinTrip}>
             Join Trip
           </button>
         </div>
       </div>
-         {/* Message display */}
-        {message && (
-          <p
-            style={{
-              color:
-                message === "Joined successfully"
-                  ? "green"
-                  : "red",
-              marginTop: "8px",
-            }}
-          >
-            {message}
-          </p>
-        )}
+
+      {message && (
+        <p
+          className={`message ${
+            message.includes("success") || message.includes("created")
+              ? "success"
+              : "error"
+          }`}
+        >
+          {message}
+        </p>
+      )}
     </div>
   );
 }

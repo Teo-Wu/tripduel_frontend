@@ -1,14 +1,14 @@
 .page-container {
-  height: 100vh;
   display: flex;
   flex-direction: column;
-  padding: 24px;
-  box-sizing: border-box;
-  gap: 24px;
+  padding: 16px;
+  gap: 16px;
   font-family: sans-serif;
+  height: 100vh;
+  box-sizing: border-box;
 }
 
-/* ---------- TOP SECTION ---------- */
+/* ---------- Trips Section ---------- */
 .trips-section {
   flex: 1;
   display: flex;
@@ -16,17 +16,26 @@
   min-height: 0;
 }
 
+.search-input {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-bottom: 12px;
+}
+
 .trip-list {
-  margin-top: 12px;
   flex: 1;
   overflow-y: auto;
   border: 1px solid #ccc;
   border-radius: 6px;
-  padding: 12px;
+  padding: 8px;
   min-height: 0;
+  background: #fafafa;
 }
 
 .trip-card {
+  display: flex;
+  flex-direction: column;
   border: 1px solid #bbb;
   border-radius: 6px;
   padding: 10px;
@@ -34,50 +43,57 @@
   background: #f9f9f9;
 }
 
-.trip-name {
-  font-weight: bold;
-  display: block;
+.trip-card strong {
   margin-bottom: 8px;
+  display: block;
 }
 
 .trip-actions {
   display: flex;
-  gap: 8px;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 
 .trip-actions button {
-  padding: 4px 10px;
+  padding: 6px 8px;
+  font-size: 14px;
   cursor: pointer;
+  border-radius: 4px;
+  border: none;
+  background: #0e5a74;
+  color: white;
 }
 
-/* ---------- BOTTOM SECTION ---------- */
+.trip-actions button.delete-btn {
+  background: #ff4d4f;
+}
+
+.trip-actions button:hover {
+  opacity: 0.85;
+}
+
+/* ---------- Actions Section ---------- */
 .actions-section {
   display: flex;
-  gap: 40px;
+  gap: 16px;
+  flex-wrap: wrap;
   justify-content: center;
-}
-
-@media (max-width: 768px) {
-  .actions-section {
-    flex-direction: column;
-    gap: 16px;
-    align-items: center;
-  }
 }
 
 .action-box {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .action-box input {
   padding: 8px;
   width: 100%;
-  max-width: 220px; /* keeps desktop look */
+  max-width: 220px;
   box-sizing: border-box;
+  border-radius: 6px;
+  border: 1px solid #ccc;
 }
-
 
 .primary {
   background-color: #0e5a74;
@@ -85,9 +101,29 @@
   border: none;
   padding: 10px;
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: 6px;
 }
 
 .primary:hover {
   background-color: #0b4a60;
+}
+
+.message {
+  margin-top: 8px;
+  font-weight: bold;
+}
+
+.message.success {
+  color: green;
+}
+
+.message.error {
+  color: red;
+}
+
+@media (max-width: 600px) {
+  .trip-actions {
+    flex-direction: column;
+    gap: 4px;
+  }
 }
