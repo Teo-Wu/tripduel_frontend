@@ -236,7 +236,7 @@ function TripEditView({ tripId }) {
         </p>
       ) : !confirmed ? (
         <button className="combine-btn" onClick={() => setConfirmed(true)}>
-          Show Upload Panel for this combination
+          Show Image Upload Panel
         </button>
       ) : null}
 
