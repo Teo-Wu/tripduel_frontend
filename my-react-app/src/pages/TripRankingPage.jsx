@@ -50,8 +50,6 @@ export default function TripRankingPage({ tripId }) {
         margin: "0 auto",
       }}
     >
-      {/* TITLE */}
-      <h1>Trip Ranking</h1>
 
       {!finished && (
         <>

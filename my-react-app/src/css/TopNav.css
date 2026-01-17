@@ -1,0 +1,81 @@
+
+.top-nav {
+  height: 56px;
+  background-color: #0e5a74;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.nav-title {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.menu-btn {
+  background: transparent;
+  border: none;
+  color:lightgreen;
+  font-size: 26px;
+  cursor: pointer;
+}
+
+/* Dropdown menu */
+.menu {
+  position: absolute;
+  top: 56px;
+  right: 8px;
+  background: white;
+  color: #222;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  min-width: 180px;
+  overflow: hidden;
+}
+
+.menu-user {
+  padding: 14px;
+  font-weight: bold;
+  border-bottom: 1px solid #eee;
+}
+
+.menu button {
+  width: 100%;
+  padding: 14px;
+  text-align: left;
+  border: none;
+  background: lightblue;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.menu button:hover {
+  background:lightseagreen;
+}
+
+.menu .danger {
+  color: #d00000;
+  font-weight: bold;
+}
+
+
+/* 🔹 Active menu item highlight */
+.menu button.active {
+  background-color: white; /* light blue background */
+  font-weight: bold;
+}
+
+/* Logout button style */
+.menu .danger {
+  color: #d00000;
+}
+
+/* Optional: separate Logout with border */
+.menu .danger {
+  border-top: 1px solid #eee;
+}

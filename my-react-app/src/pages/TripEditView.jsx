@@ -138,8 +138,6 @@ function TripEditView({ tripId }) {
 
   return (
     <div className="trip-edit-container">
-      <h2>Trip Edit View</h2>
-
       <div className="edit-grid">
         {/* PROPERTY LIST */}
         <div className="list-card">

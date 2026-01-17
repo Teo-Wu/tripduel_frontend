@@ -17,8 +17,6 @@ export default function TripResultPage(tripId) {
 
   return (
     <div style={{ textAlign: "center" }}>
-      <h1>Result View</h1>
-
       <div
         style={{
           width: 300,

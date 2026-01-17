@@ -73,8 +73,6 @@ function MyTripsPage() {
 
   return (
     <div className="page-container">
-      <h2>My Trips</h2>
-
       {/* SEARCH */}
       <input
         className="search-input"
