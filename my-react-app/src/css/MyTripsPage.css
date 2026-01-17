@@ -127,3 +127,15 @@
     gap: 4px;
   }
 }
+
+.trip-actions-row {
+  display: grid;
+  grid-template-columns: repeat(4, auto);
+  gap: 6px;
+  align-items: center;
+}
+
+.trip-actions-row button {
+  padding: 8px;
+  font-size: 14px;
+}

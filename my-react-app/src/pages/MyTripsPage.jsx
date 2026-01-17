@@ -5,7 +5,7 @@ import {
   joinTrip,
   getMyTrips,
   deleteTrip,
-} from "../services/tripsService"; // adjust path
+} from "../services/tripsService";
 import "../css/MyTripsPage.css";
 
 function MyTripsPage() {
@@ -14,9 +14,11 @@ function MyTripsPage() {
   const [tripId, setTripId] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [message, setMessage] = useState("");
+  const [openMenu, setOpenMenu] = useState(null);
+
   const navigate = useNavigate();
 
-  // Load my trips from mock backend
+  /* ---------------- LOAD TRIPS ---------------- */
   const loadTrips = async () => {
     const data = await getMyTrips();
     setTrips(data);
@@ -26,14 +28,16 @@ function MyTripsPage() {
     loadTrips();
   }, []);
 
+  /* ---------------- SEARCH ---------------- */
   const filteredTrips = useMemo(() => {
     return trips.filter((t) =>
       t.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [trips, searchTerm]);
 
+  /* ---------------- ACTIONS ---------------- */
   const handleCreateTrip = async () => {
-    if (!tripName) return;
+    if (!tripName.trim()) return;
     await createTrip(tripName);
     setTripName("");
     setMessage("Trip created");
@@ -41,7 +45,7 @@ function MyTripsPage() {
   };
 
   const handleJoinTrip = async () => {
-    if (!tripId) return;
+    if (!tripId.trim()) return;
     try {
       await joinTrip(tripId);
       setMessage("Joined successfully");
@@ -56,10 +60,11 @@ function MyTripsPage() {
     if (!window.confirm("Delete this trip?")) return;
     await deleteTrip(id);
     setMessage("Trip deleted");
+    setOpenMenu(null);
     loadTrips();
   };
 
-  // Auto-clear message
+  /* ---------------- MESSAGE AUTO CLEAR ---------------- */
   useEffect(() => {
     if (!message) return;
     const timer = setTimeout(() => setMessage(""), 3000);
@@ -69,42 +74,79 @@ function MyTripsPage() {
   return (
     <div className="page-container">
       <h2>My Trips</h2>
+
+      {/* SEARCH */}
       <input
         className="search-input"
         placeholder="Search trips..."
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
+        onBlur={() => setSearchTerm("")}
       />
 
+      {/* TRIP LIST */}
       <div className="trip-list">
         {filteredTrips.length === 0 && <p>No trips found</p>}
+
         {filteredTrips.map((trip) => (
           <div key={trip.id} className="trip-card">
             <strong>{trip.name}</strong>
-            <div className="trip-actions">
-              <button onClick={() => navigate(`/trips/${trip.id}/edit`)}>
+
+            {/* ACTION ROW */}
+            <div className="trip-actions-row">
+              <button
+                className="primary-action"
+                onClick={() => navigate(`/trips/${trip.id}/edit`)}
+              >
                 Edit
               </button>
-              <button onClick={() => navigate(`/trips/${trip.id}/rank`)}>
+
+              <button
+                onClick={() => navigate(`/trips/${trip.id}/rank`)}
+              >
                 Rank
               </button>
-              <button onClick={() => navigate(`/trips/${trip.id}/result`)}>
+
+              <button
+                onClick={() => navigate(`/trips/${trip.id}/result`)}
+              >
                 Result
               </button>
-              <button onClick={() => navigator.clipboard.writeText(trip.id)}>
-                Copy ID
-              </button>
+
               <button
-                className="delete-btn"
-                onClick={() => handleDeleteTrip(trip.id)}
+                className="more-btn"
+                onClick={() =>
+                  setOpenMenu(openMenu === trip.id ? null : trip.id)
+                }
               >
-                x
+                ⋮
               </button>
             </div>
+
+            {/* MORE MENU */}
+            {openMenu === trip.id && (
+              <div className="action-menu">
+                <button
+                  onClick={() =>
+                    navigator.clipboard.writeText(trip.id)
+                  }
+                >
+                  Copy Trip ID
+                </button>
+
+                <button
+                  className="danger"
+                  onClick={() => handleDeleteTrip(trip.id)}
+                >
+                  Delete Trip
+                </button>
+              </div>
+            )}
           </div>
         ))}
       </div>
 
+      {/* CREATE / JOIN */}
       <div className="actions-section">
         <div className="action-box">
           <input
@@ -129,10 +171,12 @@ function MyTripsPage() {
         </div>
       </div>
 
+      {/* MESSAGE */}
       {message && (
         <p
           className={`message ${
-            message.includes("success") || message.includes("created")
+            message.includes("created") ||
+            message.includes("success")
               ? "success"
               : "error"
           }`}

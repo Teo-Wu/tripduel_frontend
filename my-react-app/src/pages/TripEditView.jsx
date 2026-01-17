@@ -149,6 +149,7 @@ function TripEditView({ tripId }) {
             placeholder="Search property..."
             value={searchProperty}
             onChange={(e) => setSearchProperty(e.target.value)}
+            onBlur={() => setSearchProperty("")}
           />
           <div className="scroll-area">
             {filteredProperties.map((p) => (
