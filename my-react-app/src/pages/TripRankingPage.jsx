@@ -8,7 +8,7 @@ import {
 } from "../services/ranking/rankingApi";
 import { getImageById } from "../services/ranking/imageApi";
 
-export default function TripRankingPage(tripId) {
+export default function TripRankingPage({ tripId }) {
   const navigate = useNavigate();
 
   const [leftImage, setLeftImage] = useState(null);
@@ -42,32 +42,44 @@ export default function TripRankingPage(tripId) {
   }
 
   return (
-    <div style={{ textAlign: "center" }}>
+    <div
+      style={{
+        textAlign: "center",
+        padding: "20px",
+        maxWidth: "600px",
+        margin: "0 auto",
+      }}
+    >
       {/* TITLE */}
       <h1>Trip Ranking</h1>
 
       {!finished && (
         <>
           {/* IMAGES */}
-          <div style={{ display: "flex", gap: 40, justifyContent: "center" }}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "20px",
+              alignItems: "center",
+            }}
+          >
             <img
               src={leftImage}
               alt="left"
               onClick={() => vote("left")}
-              style={{ cursor: "pointer", width: 300 }}
+              style={{ cursor: "pointer", width: "100%", maxWidth: 300 }}
             />
             <img
               src={rightImage}
               alt="right"
               onClick={() => vote("right")}
-              style={{ cursor: "pointer", width: 300 }}
+              style={{ cursor: "pointer", width: "100%", maxWidth: 300 }}
             />
           </div>
 
           {/* HELP TEXT */}
-          <p style={{ marginTop: 20 }}>
-            Choose the image you prefer
-          </p>
+          <p style={{ marginTop: 20 }}>Choose the image you prefer</p>
 
           {/* PROGRESS */}
           <p>
@@ -79,8 +91,15 @@ export default function TripRankingPage(tripId) {
       {finished && (
         <>
           <h2>Ranking finished 🎉</h2>
-
-          <button onClick={() => navigate(`/trips/${tripId}/result`)}>
+          <button
+            onClick={() => navigate(`/trips/${tripId}/result`)}
+            style={{
+              padding: "10px 20px",
+              fontSize: "16px",
+              cursor: "pointer",
+              marginTop: "10px",
+            }}
+          >
             See Result
           </button>
         </>
