@@ -24,3 +24,18 @@ export async function getImage(property, category) {
   if (!image) throw "Image not found";
   return image;
 }
+
+export async function deleteImage(property, category) {
+  // Remove the image from mockDb for this property + category
+  const initialLength = mockDb.images.length;
+
+  mockDb.images = mockDb.images.filter(
+    img => img.property !== property || img.category !== category
+  );
+
+  if (mockDb.images.length === initialLength) {
+    throw "No image found to delete"; // optional: throw if nothing was deleted
+  }
+
+  return true; // return success
+}

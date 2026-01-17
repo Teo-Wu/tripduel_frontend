@@ -15,10 +15,12 @@ function MyTripsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [message, setMessage] = useState("");
   const [openMenu, setOpenMenu] = useState(null);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showJoinModal, setShowJoinModal] = useState(false);
 
   const navigate = useNavigate();
 
-  /* ---------------- LOAD TRIPS ---------------- */
+  // Load trips
   const loadTrips = async () => {
     const data = await getMyTrips();
     setTrips(data);
@@ -28,34 +30,52 @@ function MyTripsPage() {
     loadTrips();
   }, []);
 
-  /* ---------------- SEARCH ---------------- */
+  // Filter trips
   const filteredTrips = useMemo(() => {
     return trips.filter((t) =>
       t.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [trips, searchTerm]);
 
-  /* ---------------- ACTIONS ---------------- */
+  // CREATE TRIP
   const handleCreateTrip = async () => {
-    if (!tripName.trim()) return;
-    await createTrip(tripName);
+    if (!tripName.trim()) {
+      setMessage("Trip name cannot be empty");
+      return;
+    }
+    if (trips.some((t) => t.name.toLowerCase() === tripName.trim().toLowerCase())) {
+      setMessage("Trip name already exists");
+      return;
+    }
+    await createTrip(tripName.trim());
     setTripName("");
+    setShowCreateModal(false);
     setMessage("Trip created");
     loadTrips();
   };
 
+  // JOIN TRIP
   const handleJoinTrip = async () => {
-    if (!tripId.trim()) return;
+    if (!tripId.trim()) {
+      setMessage("Trip ID cannot be empty");
+      return;
+    }
+    if (trips.some((t) => t.id === tripId.trim())) {
+      setMessage("You have already joined this trip");
+      return;
+    }
     try {
-      await joinTrip(tripId);
-      setMessage("Joined successfully");
+      await joinTrip(tripId.trim());
       setTripId("");
+      setShowJoinModal(false);
+      setMessage("Joined successfully");
       loadTrips();
     } catch (err) {
       setMessage(err.toString());
     }
   };
 
+  // DELETE TRIP
   const handleDeleteTrip = async (id) => {
     if (!window.confirm("Delete this trip?")) return;
     await deleteTrip(id);
@@ -64,7 +84,7 @@ function MyTripsPage() {
     loadTrips();
   };
 
-  /* ---------------- MESSAGE AUTO CLEAR ---------------- */
+  // Auto-hide message
   useEffect(() => {
     if (!message) return;
     const timer = setTimeout(() => setMessage(""), 3000);
@@ -98,19 +118,12 @@ function MyTripsPage() {
               >
                 Edit
               </button>
-
-              <button
-                onClick={() => navigate(`/trips/${trip.id}/rank`)}
-              >
+              <button onClick={() => navigate(`/trips/${trip.id}/rank`)}>
                 Rank
               </button>
-
-              <button
-                onClick={() => navigate(`/trips/${trip.id}/result`)}
-              >
+              <button onClick={() => navigate(`/trips/${trip.id}/result`)}>
                 Result
               </button>
-
               <button
                 className="more-btn"
                 onClick={() =>
@@ -124,18 +137,10 @@ function MyTripsPage() {
             {/* MORE MENU */}
             {openMenu === trip.id && (
               <div className="action-menu">
-                <button
-                  onClick={() =>
-                    navigator.clipboard.writeText(trip.id)
-                  }
-                >
+                <button onClick={() => navigator.clipboard.writeText(trip.id)}>
                   Copy Trip ID
                 </button>
-
-                <button
-                  className="danger"
-                  onClick={() => handleDeleteTrip(trip.id)}
-                >
+                <button className="danger" onClick={() => handleDeleteTrip(trip.id)}>
                   Delete Trip
                 </button>
               </div>
@@ -144,26 +149,16 @@ function MyTripsPage() {
         ))}
       </div>
 
-      {/* CREATE / JOIN */}
+      {/* CREATE / JOIN BUTTONS */}
       <div className="actions-section">
         <div className="action-box">
-          <input
-            placeholder="Enter Trip Name"
-            value={tripName}
-            onChange={(e) => setTripName(e.target.value)}
-          />
-          <button className="primary" onClick={handleCreateTrip}>
-            Create Trip
+          <button className="primary" onClick={() => setShowCreateModal(true)}>
+            + Add New Trip
           </button>
         </div>
 
         <div className="action-box">
-          <input
-            placeholder="Enter Trip ID"
-            value={tripId}
-            onChange={(e) => setTripId(e.target.value)}
-          />
-          <button className="primary" onClick={handleJoinTrip}>
+          <button className="primary" onClick={() => setShowJoinModal(true)}>
             Join Trip
           </button>
         </div>
@@ -173,14 +168,51 @@ function MyTripsPage() {
       {message && (
         <p
           className={`message ${
-            message.includes("created") ||
-            message.includes("success")
+            message.includes("created") || message.includes("success")
               ? "success"
               : "error"
           }`}
         >
           {message}
         </p>
+      )}
+
+      {/* CREATE TRIP MODAL */}
+      {showCreateModal && (
+        <div className="modal-backdrop">
+          <div className="modal">
+            <h4>New Trip</h4>
+            <input
+              autoFocus
+              placeholder="Enter trip name"
+              value={tripName}
+              onChange={(e) => setTripName(e.target.value)}
+            />
+            <button onClick={handleCreateTrip}>Add Trip</button>
+            <button className="cancel" onClick={() => setShowCreateModal(false)}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* JOIN TRIP MODAL */}
+      {showJoinModal && (
+        <div className="modal-backdrop">
+          <div className="modal">
+            <h4>Join Trip</h4>
+            <input
+              autoFocus
+              placeholder="Enter trip ID"
+              value={tripId}
+              onChange={(e) => setTripId(e.target.value)}
+            />
+            <button onClick={handleJoinTrip}>Join</button>
+            <button className="cancel" onClick={() => setShowJoinModal(false)}>
+              Cancel
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );

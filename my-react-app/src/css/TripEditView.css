@@ -131,7 +131,7 @@
 .message {
   text-align: center;
   margin-top: 12px;
-  color: green;
+  color: red;
 }
 
 /* MODAL */
@@ -190,4 +190,30 @@
   max-width: 300px;
   border-radius: 8px;
   margin-bottom: 12px;
+}
+
+.image-delete-btn {
+  background: #ff4d4f;
+  color:black;
+  border: none;
+  padding: 8px 16px;      /* wider padding for text */
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-top: 8px;
+  transition: background 0.2s;
+}
+
+
+.image-panel .delete-btn {
+  background: #ff4d4f;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.image-panel .delete-btn:hover {
+  background: #d9363e;
 }

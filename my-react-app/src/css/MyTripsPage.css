@@ -1,46 +1,51 @@
+/* Page container adjustment for wider look */
 .page-container {
   display: flex;
   flex-direction: column;
   padding: 16px;
   gap: 16px;
   font-family: sans-serif;
-  height: 100vh;
+  height: auto;              /* allow container to shrink if list is smaller */
+  max-width: 900px;          /* wider container */
+  margin: auto;              /* center on page */
   box-sizing: border-box;
 }
 
-/* ---------- Trips Section ---------- */
-.trips-section {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-}
-
 .search-input {
-  padding: 8px;
-  border-radius: 6px;
+  padding: 10px;
+  border-radius: 8px;
   border: 1px solid #ccc;
   margin-bottom: 12px;
+  font-size: 14px;
 }
-
+/* Adjusted trip list container */
 .trip-list {
-  flex: 1;
-  overflow-y: auto;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  padding: 8px;
+  flex: none;                /* don’t stretch to fill all vertical space */
+  max-height: 350px;         /* slightly shorter than before */
+  overflow-y: auto;          /* scrollable */
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
   min-height: 0;
   background: #fafafa;
+  width: 95%;                /* slightly wider on larger screens */
+  margin: 0 auto;            /* center horizontally */
 }
 
+/* Trip card */
 .trip-card {
   display: flex;
   flex-direction: column;
   border: 1px solid #bbb;
-  border-radius: 6px;
-  padding: 10px;
+  border-radius: 8px;
+  padding: 12px;
   margin-bottom: 10px;
-  background: #f9f9f9;
+  background: #f0f0f0;
+  transition: background 0.2s;
+}
+
+.trip-card:hover {
+  background: #e6e6e6;
 }
 
 .trip-card strong {
@@ -48,31 +53,65 @@
   display: block;
 }
 
-.trip-actions {
-  display: flex;
-  flex-wrap: wrap;
+/* Actions row */
+.trip-actions-row {
+  display: grid;
+  grid-template-columns: repeat(4, auto);
   gap: 6px;
+  align-items: center;
 }
 
-.trip-actions button {
-  padding: 6px 8px;
+.trip-actions-row button {
+  padding: 8px;
   font-size: 14px;
+  border-radius: 6px;
   cursor: pointer;
-  border-radius: 4px;
   border: none;
-  background: #0e5a74;
+  background: #007bff;
+  color: white;
+  transition: background 0.2s;
+}
+
+.trip-actions-row button:hover {
+  background: #0056b3;
+}
+
+.more-btn {
+  background: #6c757d;
+}
+
+/* Action menu */
+.action-menu {
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 6px;
+  background: #fff;
+}
+
+.action-menu button {
+  background: #f0f0f0;
+  color: #333;
+  border-radius: 6px;
+  padding: 6px 8px;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+}
+
+.action-menu button.danger {
+  background: #ff4d4f;
   color: white;
 }
 
-.trip-actions button.delete-btn {
-  background: #ff4d4f;
-}
-
-.trip-actions button:hover {
+.action-menu button:hover {
   opacity: 0.85;
 }
 
-/* ---------- Actions Section ---------- */
+/* Actions section */
 .actions-section {
   display: flex;
   gap: 16px;
@@ -87,27 +126,30 @@
 }
 
 .action-box input {
-  padding: 8px;
+  padding: 10px;
   width: 100%;
   max-width: 220px;
   box-sizing: border-box;
-  border-radius: 6px;
+  border-radius: 8px;
   border: 1px solid #ccc;
+  font-size: 14px;
 }
 
 .primary {
-  background-color: #0e5a74;
+  background-color: #007bff;
   color: white;
   border: none;
   padding: 10px;
   cursor: pointer;
-  border-radius: 6px;
+  border-radius: 8px;
+  transition: background 0.2s;
 }
 
 .primary:hover {
-  background-color: #0b4a60;
+  background-color: #0056b3;
 }
 
+/* Messages */
 .message {
   margin-top: 8px;
   font-weight: bold;
@@ -121,21 +163,57 @@
   color: red;
 }
 
-@media (max-width: 600px) {
-  .trip-actions {
-    flex-direction: column;
-    gap: 4px;
-  }
-}
-
-.trip-actions-row {
-  display: grid;
-  grid-template-columns: repeat(4, auto);
-  gap: 6px;
+/* Modal */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
   align-items: center;
+  justify-content: center;
+  z-index: 1000;
 }
 
-.trip-actions-row button {
-  padding: 8px;
-  font-size: 14px;
+.modal {
+  background: white;
+  width: 90%;
+  max-width: 320px;
+  padding: 16px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.modal input {
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.modal button {
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.modal button:not(.cancel) {
+  background: #007bff;
+  color: white;
+}
+
+.modal .cancel {
+  background: #ddd;
+}
+
+
+/* Mobile responsiveness stays the same */
+@media (max-width: 600px) {
+  .trip-list {
+    width: 100%;             /* full width on mobile */
+    max-height: 300px;       /* slightly smaller on mobile */
+  }
 }

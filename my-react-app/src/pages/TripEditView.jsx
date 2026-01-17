@@ -14,6 +14,7 @@ import {
 import {
   uploadImage,
   getImage,
+  deleteImage,
 } from "../services/property/imageService";
 
 import "../css/TripEditView.css";
@@ -88,6 +89,20 @@ function TripEditView({ tripId }) {
     setShowImageModal(true);
   };
 
+    // DELETE IMAGE HANDLER
+  const handleDeleteImage = async () => {
+    if (!window.confirm("Delete this image?")) return;
+
+    try {
+      await deleteImage(selectedProperty, selectedCategory); // assuming your API supports this
+      setImage(null);
+      setMessage("Image deleted");
+    } catch (err) {
+      setMessage("Failed to delete image");
+    }
+  };
+
+
   // Filtered lists for search
   const filteredProperties = useMemo(() => {
     return properties.filter((p) =>
@@ -103,7 +118,15 @@ function TripEditView({ tripId }) {
 
   // Add / Delete handlers
   const handleAddProperty = async () => {
-    if (!newPropertyName) return;
+    const name = newPropertyName.trim();
+    if (!name) {
+      setMessage("Property name cannot be empty");
+      return;
+    }
+    if (properties.some((p) => p.name.toLowerCase() === name.toLowerCase())) {
+      setMessage("Property name already exists");
+      return;
+    }
     const prop = await createProperty({ trip: tripId, name: newPropertyName });
     setProperties((prev) => [...prev, prop]);
     setNewPropertyName("");
@@ -120,7 +143,15 @@ function TripEditView({ tripId }) {
   };
 
   const handleAddCategory = async () => {
-    if (!newCategoryName) return;
+    const name = newCategoryName.trim();
+    if (!name) {
+      setMessage("Category name cannot be empty");
+      return;
+    }
+    if (categories.some((c) => c.name.toLowerCase() === name.toLowerCase())) {
+      setMessage("Category name already exists");
+      return;
+    }
     const cat = await createCategory({ trip: tripId, name: newCategoryName });
     setCategories((prev) => [...prev, cat]);
     setNewCategoryName("");
@@ -239,17 +270,23 @@ function TripEditView({ tripId }) {
         </button>
       ) : null}
 
-      {/* IMAGE UPLOAD PANEL */}
+            {/* IMAGE UPLOAD PANEL */}
       {confirmed && selectedProperty && selectedCategory && (
         <div className="image-panel">
           {image ? (
-            <img src={image.url} alt="Uploaded" />
+            <>
+              <img src={image.url} alt="Uploaded" />
+              <button className="img-delete-btn" onClick={handleDeleteImage}>
+                Delete Image
+              </button>
+            </>
           ) : (
             <p>No image for this selection</p>
           )}
           <input type="file" onChange={handleUpload} />
         </div>
       )}
+
 
       {message && <p className="message">{message}</p>}
 
