@@ -13,16 +13,19 @@ import {
 
 import {
   uploadImage,
-  getImage,
+  listImages,
   deleteImage,
 } from "../services/property/imageService";
 
 import "../css/TripEditView.css";
+import { useParams } from "react-router-dom";
 
-function TripEditView({ tripId }) {
+function TripEditView() {
+  const { tripId } = useParams();
   const [properties, setProperties] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [image, setImage] = useState(null);
+  const [images, setImages] = useState([]); // all images for trip
+  const [image, setImage] = useState(null); // selected image
 
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -40,33 +43,36 @@ function TripEditView({ tripId }) {
 
   const [message, setMessage] = useState("");
 
-  // Fetch initial lists
+  // Fetch initial lists and images
   useEffect(() => {
     async function load() {
-      const props = await listProperties(tripId);
-      const cats = await listCategories(tripId);
-      setProperties(props);
-      setCategories(cats);
+      try {
+        const [props, cats, imgs] = await Promise.all([
+          listProperties(tripId),
+          listCategories(tripId),
+          listImages(tripId),
+        ]);
+        setProperties(props);
+        setCategories(cats);
+        setImages(imgs);
+      } catch (err) {
+        setMessage("Failed to load data");
+      }
     }
     load();
   }, [tripId]);
 
-  // Fetch image when confirmed
+  // Update selected image when property + category selected
   useEffect(() => {
-    async function fetchImage() {
-      if (confirmed && selectedProperty && selectedCategory) {
-        try {
-          const img = await getImage(selectedProperty, selectedCategory);
-          setImage(img);
-        } catch {
-          setImage(null);
-        }
-      }
+    if (confirmed && selectedProperty && selectedCategory) {
+      const img = images.find(
+        i => i.property === selectedProperty && i.category === selectedCategory
+      );
+      setImage(img ? { ...img, url: `/api/images/${img.id}` } : null);
     }
-    fetchImage();
-  }, [confirmed, selectedProperty, selectedCategory]);
+  }, [confirmed, selectedProperty, selectedCategory, images]);
 
-  // Auto-hide message
+  // Auto-hide messages
   useEffect(() => {
     if (!message) return;
     const t = setTimeout(() => setMessage(""), 3000);
@@ -78,115 +84,131 @@ function TripEditView({ tripId }) {
     const file = e.target.files[0];
     if (!file) return;
 
-    const img = await uploadImage({
-      property: selectedProperty,
-      category: selectedCategory,
-      file,
-    });
-
-    setImage(img);
-    setMessage("Image uploaded");
-    setShowImageModal(true);
+    try {
+      const img = await uploadImage({
+        property: selectedProperty,
+        category: selectedCategory,
+        file,
+      });
+      const imgWithUrl = { ...img, url: `/api/images/${img.id}` };
+      setImages(prev => {
+        // remove previous image for same property/category
+        const filtered = prev.filter(
+          i => !(i.property === selectedProperty && i.category === selectedCategory)
+        );
+        return [...filtered, imgWithUrl];
+      });
+      setImage(imgWithUrl);
+      setMessage("Image uploaded");
+      setShowImageModal(true);
+    } catch {
+      setMessage("Failed to upload image");
+    }
   };
 
-    // DELETE IMAGE HANDLER
+  // Handle delete
   const handleDeleteImage = async () => {
     if (!window.confirm("Delete this image?")) return;
+    if (!image?.id) return setMessage("No image to delete");
 
     try {
-      await deleteImage(selectedProperty, selectedCategory); // assuming your API supports this
+      await deleteImage(image.id);
+      setImages(prev => prev.filter(i => i.id !== image.id));
       setImage(null);
       setMessage("Image deleted");
-    } catch (err) {
+    } catch {
       setMessage("Failed to delete image");
     }
   };
 
+  // Filtered lists
+  const filteredProperties = useMemo(
+    () => properties.filter(p => p.name.toLowerCase().includes(searchProperty.toLowerCase())),
+    [properties, searchProperty]
+  );
 
-  // Filtered lists for search
-  const filteredProperties = useMemo(() => {
-    return properties.filter((p) =>
-      p.name.toLowerCase().includes(searchProperty.toLowerCase())
-    );
-  }, [properties, searchProperty]);
+  const filteredCategories = useMemo(
+    () => categories.filter(c => c.name.toLowerCase().includes(searchCategory.toLowerCase())),
+    [categories, searchCategory]
+  );
 
-  const filteredCategories = useMemo(() => {
-    return categories.filter((c) =>
-      c.name.toLowerCase().includes(searchCategory.toLowerCase())
-    );
-  }, [categories, searchCategory]);
-
-  // Add / Delete handlers
+  // Add/Delete handlers for property/category
   const handleAddProperty = async () => {
     const name = newPropertyName.trim();
-    if (!name) {
-      setMessage("Property name cannot be empty");
-      return;
+    if (!name) return setMessage("Property name cannot be empty");
+    if (properties.some(p => p.name.toLowerCase() === name.toLowerCase()))
+      return setMessage("Property name already exists");
+
+    try {
+      const prop = await createProperty({ trip: tripId, name });
+      setProperties(prev => [...prev, prop]);
+      setNewPropertyName("");
+      setShowPropertyModal(false);
+      setMessage("Property created");
+    } catch {
+      setMessage("Failed to create property");
     }
-    if (properties.some((p) => p.name.toLowerCase() === name.toLowerCase())) {
-      setMessage("Property name already exists");
-      return;
-    }
-    const prop = await createProperty({ trip: tripId, name: newPropertyName });
-    setProperties((prev) => [...prev, prop]);
-    setNewPropertyName("");
-    setShowPropertyModal(false);
-    setMessage("Property created");
   };
 
   const handleDeleteProperty = async (id) => {
     if (!window.confirm("Delete this property?")) return;
-    await deleteProperty(id);
-    setProperties((prev) => prev.filter((p) => p.id !== id));
-    if (selectedProperty === id) setSelectedProperty(null);
-    setMessage("Property deleted");
+    try {
+      await deleteProperty(id);
+      setProperties(prev => prev.filter(p => p.id !== id));
+      if (selectedProperty === id) setSelectedProperty(null);
+      setMessage("Property deleted");
+    } catch {
+      setMessage("Failed to delete property");
+    }
   };
 
   const handleAddCategory = async () => {
     const name = newCategoryName.trim();
-    if (!name) {
-      setMessage("Category name cannot be empty");
-      return;
+    if (!name) return setMessage("Category name cannot be empty");
+    if (categories.some(c => c.name.toLowerCase() === name.toLowerCase()))
+      return setMessage("Category name already exists");
+
+    try {
+      const cat = await createCategory({ trip: tripId, name });
+      setCategories(prev => [...prev, cat]);
+      setNewCategoryName("");
+      setShowCategoryModal(false);
+      setMessage("Category created");
+    } catch {
+      setMessage("Failed to create category");
     }
-    if (categories.some((c) => c.name.toLowerCase() === name.toLowerCase())) {
-      setMessage("Category name already exists");
-      return;
-    }
-    const cat = await createCategory({ trip: tripId, name: newCategoryName });
-    setCategories((prev) => [...prev, cat]);
-    setNewCategoryName("");
-    setShowCategoryModal(false);
-    setMessage("Category created");
   };
 
   const handleDeleteCategory = async (id) => {
     if (!window.confirm("Delete this category?")) return;
-    await deleteCategory(id);
-    setCategories((prev) => prev.filter((c) => c.id !== id));
-    if (selectedCategory === id) setSelectedCategory(null);
-    setMessage("Category deleted");
+    try {
+      await deleteCategory(id);
+      setCategories(prev => prev.filter(c => c.id !== id));
+      if (selectedCategory === id) setSelectedCategory(null);
+      setMessage("Category deleted");
+    } catch {
+      setMessage("Failed to delete category");
+    }
   };
 
   return (
     <div className="trip-edit-container">
       <div className="edit-grid">
-        {/* PROPERTY LIST */}
+        {/* Properties */}
         <div className="list-card">
           <h3>Property</h3>
           <input
             className="search-input"
             placeholder="Search property..."
             value={searchProperty}
-            onChange={(e) => setSearchProperty(e.target.value)}
+            onChange={e => setSearchProperty(e.target.value)}
             onBlur={() => setSearchProperty("")}
           />
           <div className="scroll-area">
-            {filteredProperties.map((p) => (
+            {filteredProperties.map(p => (
               <div
                 key={p.id}
-                className={`list-item ${
-                  selectedProperty === p.id ? "selected" : ""
-                }`}
+                className={`list-item ${selectedProperty === p.id ? "selected" : ""}`}
               >
                 <span
                   className="item-text"
@@ -199,7 +221,7 @@ function TripEditView({ tripId }) {
                 </span>
                 <button
                   className="delete-btn"
-                  onClick={(e) => {
+                  onClick={e => {
                     e.stopPropagation();
                     handleDeleteProperty(p.id);
                   }}
@@ -214,22 +236,20 @@ function TripEditView({ tripId }) {
           </button>
         </div>
 
-        {/* CATEGORY LIST */}
+        {/* Categories */}
         <div className="list-card">
           <h3>Category</h3>
           <input
             className="search-input"
             placeholder="Search category..."
             value={searchCategory}
-            onChange={(e) => setSearchCategory(e.target.value)}
+            onChange={e => setSearchCategory(e.target.value)}
           />
           <div className="scroll-area">
-            {filteredCategories.map((c) => (
+            {filteredCategories.map(c => (
               <div
                 key={c.id}
-                className={`list-item ${
-                  selectedCategory === c.id ? "selected" : ""
-                }`}
+                className={`list-item ${selectedCategory === c.id ? "selected" : ""}`}
               >
                 <span
                   className="item-text"
@@ -242,7 +262,7 @@ function TripEditView({ tripId }) {
                 </span>
                 <button
                   className="delete-btn"
-                  onClick={(e) => {
+                  onClick={e => {
                     e.stopPropagation();
                     handleDeleteCategory(c.id);
                   }}
@@ -258,11 +278,10 @@ function TripEditView({ tripId }) {
         </div>
       </div>
 
-      {/* GUIDANCE */}
+      {/* Image upload guidance */}
       {!selectedProperty || !selectedCategory ? (
         <p className="notice">
-          Please select <strong>one Property</strong> and{" "}
-          <strong>one Category</strong> to upload an image.
+          Please select <strong>one Property</strong> and <strong>one Category</strong> to upload an image.
         </p>
       ) : !confirmed ? (
         <button className="combine-btn" onClick={() => setConfirmed(true)}>
@@ -270,7 +289,7 @@ function TripEditView({ tripId }) {
         </button>
       ) : null}
 
-            {/* IMAGE UPLOAD PANEL */}
+      {/* Image Upload Panel */}
       {confirmed && selectedProperty && selectedCategory && (
         <div className="image-panel">
           {image ? (
@@ -287,10 +306,9 @@ function TripEditView({ tripId }) {
         </div>
       )}
 
-
       {message && <p className="message">{message}</p>}
 
-      {/* PROPERTY MODAL */}
+      {/* Property Modal */}
       {showPropertyModal && (
         <div className="modal-backdrop">
           <div className="modal">
@@ -299,7 +317,7 @@ function TripEditView({ tripId }) {
               autoFocus
               placeholder="Enter property name"
               value={newPropertyName}
-              onChange={(e) => setNewPropertyName(e.target.value)}
+              onChange={e => setNewPropertyName(e.target.value)}
             />
             <button onClick={handleAddProperty}>Add</button>
             <button className="cancel" onClick={() => setShowPropertyModal(false)}>
@@ -309,7 +327,7 @@ function TripEditView({ tripId }) {
         </div>
       )}
 
-      {/* CATEGORY MODAL */}
+      {/* Category Modal */}
       {showCategoryModal && (
         <div className="modal-backdrop">
           <div className="modal">
@@ -318,7 +336,7 @@ function TripEditView({ tripId }) {
               autoFocus
               placeholder="Enter category name"
               value={newCategoryName}
-              onChange={(e) => setNewCategoryName(e.target.value)}
+              onChange={e => setNewCategoryName(e.target.value)}
             />
             <button onClick={handleAddCategory}>Add</button>
             <button className="cancel" onClick={() => setShowCategoryModal(false)}>
@@ -328,7 +346,7 @@ function TripEditView({ tripId }) {
         </div>
       )}
 
-      {/* IMAGE PREVIEW MODAL */}
+      {/* Image Preview Modal */}
       {showImageModal && image && (
         <div className="modal-backdrop">
           <div className="modal image-modal">

@@ -1,41 +1,31 @@
-import { mockDb } from "./mockDb";
+// services/property/imageService.js
 
+// Upload an image
 export async function uploadImage({ property, category, file }) {
-  const image = {
-    id: crypto.randomUUID(),
-    property,
-    category,
-    url: URL.createObjectURL(file),
-  };
+  const formData = new FormData();
+  formData.append("property", property);
+  formData.append("category", category);
+  formData.append("file", file);
 
-  mockDb.images = mockDb.images.filter(
-    img => img.property !== property || img.category !== category
-  );
+  const res = await fetch(`/api/images`, {
+    method: "POST",
+    body: formData,
+  });
 
-  mockDb.images.push(image);
-  return image;
+  if (!res.ok) throw new Error("Failed to upload image");
+  return res.json(); // returns { id, property, category }
 }
 
-export async function getImage(property, category) {
-  const image = mockDb.images.find(
-    img => img.property === property && img.category === category
-  );
-
-  if (!image) throw "Image not found";
-  return image;
+// List all images for a trip
+export async function listImages(tripId) {
+  const res = await fetch(`/api/images?trip=${tripId}`);
+  if (!res.ok) throw new Error("Failed to fetch images");
+  return res.json(); // returns array of { id, property, category }
 }
 
-export async function deleteImage(property, category) {
-  // Remove the image from mockDb for this property + category
-  const initialLength = mockDb.images.length;
-
-  mockDb.images = mockDb.images.filter(
-    img => img.property !== property || img.category !== category
-  );
-
-  if (mockDb.images.length === initialLength) {
-    throw "No image found to delete"; // optional: throw if nothing was deleted
-  }
-
-  return true; // return success
+// Delete image by id
+export async function deleteImage(id) {
+  const res = await fetch(`/api/images/${id}`, { method: "DELETE" });
+  if (!res.ok) throw new Error("Failed to delete image");
+  return true;
 }

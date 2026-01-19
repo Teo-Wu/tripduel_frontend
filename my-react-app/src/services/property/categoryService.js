@@ -1,26 +1,33 @@
-import { mockDb } from "./mockDb";
+// services/property/categoryService.js
 
 export async function listCategories(tripId) {
-  return mockDb.categories.filter(c => c.trip === tripId);
+  const res = await fetch(`/api/categories?trip=${tripId}`);
+  if (!res.ok) throw new Error("Failed to fetch categories");
+  return res.json();
 }
 
 export async function createCategory({ trip, name }) {
-  const category = {
-    id: crypto.randomUUID(),
-    trip,
-    name,
-  };
-  mockDb.categories.push(category);
-  return category;
+  const res = await fetch(`/api/categories`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ trip, name }),
+  });
+  if (!res.ok) throw new Error("Failed to create category");
+  return res.json();
 }
 
 export async function updateCategory(id, { name }) {
-  const category = mockDb.categories.find(c => c.id === id);
-  if (!category) throw "Category not found";
-  category.name = name;
-  return category;
+  const res = await fetch(`/api/categories/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name }),
+  });
+  if (!res.ok) throw new Error("Failed to update category");
+  return res.json();
 }
 
 export async function deleteCategory(id) {
-  mockDb.categories = mockDb.categories.filter(c => c.id !== id);
+  const res = await fetch(`/api/categories/${id}`, { method: "DELETE" });
+  if (!res.ok) throw new Error("Failed to delete category");
+  return true;
 }

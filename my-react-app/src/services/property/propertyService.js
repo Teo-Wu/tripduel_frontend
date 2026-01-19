@@ -1,26 +1,33 @@
-import { mockDb } from "./mockDb";
+// services/property/propertyService.js
 
 export async function listProperties(tripId) {
-  return mockDb.properties.filter(p => p.trip === tripId);
+  const res = await fetch(`/api/properties?trip=${tripId}`);
+  if (!res.ok) throw new Error("Failed to fetch properties");
+  return res.json();
 }
 
 export async function createProperty({ trip, name }) {
-  const property = {
-    id: crypto.randomUUID(),
-    trip,
-    name,
-  };
-  mockDb.properties.push(property);
-  return property;
+  const res = await fetch(`/api/properties`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ trip, name }),
+  });
+  if (!res.ok) throw new Error("Failed to create property");
+  return res.json();
 }
 
 export async function updateProperty(id, { name }) {
-  const property = mockDb.properties.find(p => p.id === id);
-  if (!property) throw "Property not found";
-  property.name = name;
-  return property;
+  const res = await fetch(`/api/properties/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name }),
+  });
+  if (!res.ok) throw new Error("Failed to update property");
+  return res.json();
 }
 
 export async function deleteProperty(id) {
-  mockDb.properties = mockDb.properties.filter(p => p.id !== id);
+  const res = await fetch(`/api/properties/${id}`, { method: "DELETE" });
+  if (!res.ok) throw new Error("Failed to delete property");
+  return true;
 }
