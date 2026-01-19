@@ -12,20 +12,20 @@ import TopNav from "./pages/TopNav";
 import "./css/App.css";
 
 function App() {
-  const [token, setToken] = useState(localStorage.getItem("token") || "");
+  const [userId, setuserId] = useState(localStorage.getItem("userId") || "");
   const [username, setUsername] = useState(localStorage.getItem("username") || "");
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    localStorage.removeItem("userId");
     localStorage.removeItem("username");
-    setToken("");
+    setuserId("");
     setUsername("");
   };
 
   return (
     <HashRouter>
       {/* 🔹 REPLACED NAVBAR */}
-      {!token && (
+      {!userId && (
   <nav className="navbar">
     <div className="nav-left">
       <a href="#/register">Register</a>
@@ -33,7 +33,7 @@ function App() {
     </div>
   </nav>
 )}
-      {token && (
+      {userId && (
         <TopNav
           username={username}
           onLogout={handleLogout}
@@ -45,11 +45,11 @@ function App() {
         <Route
           path="/"
           element={
-            token ? (
+            userId ? (
               <MyTripsPage />
             ) : (
               <LoginPage
-                setToken={setToken}
+                setuserId={setuserId}
                 setUsername={setUsername}
                 username={username}
               />
@@ -60,11 +60,11 @@ function App() {
         <Route
           path="/mytrips"
           element={
-            token ? (
+            userId ? (
               <MyTripsPage />
             ) : (
               <LoginPage
-                setToken={setToken}
+                setuserId={setuserId}
                 setUsername={setUsername}
                 username={username}
               />
@@ -78,7 +78,7 @@ function App() {
           path="/login"
           element={
             <LoginPage
-              setToken={setToken}
+              setuserId={setuserId}
               setUsername={setUsername}
               username={username}
             />
@@ -88,11 +88,11 @@ function App() {
         <Route
           path="/profile"
           element={
-            token ? (
-              <ProfilePage token={token} />
+            userId ? (
+              <ProfilePage userId={userId} />
             ) : (
               <LoginPage
-                setToken={setToken}
+                setuserId={setuserId}
                 setUsername={setUsername}
                 username={username}
               />
@@ -103,11 +103,11 @@ function App() {
         <Route
           path="/trips/:tripId/edit"
           element={
-            token ? (
+            userId ? (
               <TripEditView />
             ) : (
               <LoginPage
-                setToken={setToken}
+                setuserId={setuserId}
                 setUsername={setUsername}
                 username={username}
               />
@@ -118,11 +118,11 @@ function App() {
         <Route
           path="/trips/:tripId/rank"
           element={
-            token ? (
+            userId ? (
               <TripRankingPage />
             ) : (
               <LoginPage
-                setToken={setToken}
+                setuserId={setuserId}
                 setUsername={setUsername}
                 username={username}
               />
@@ -133,11 +133,11 @@ function App() {
         <Route
           path="/trips/:tripId/result"
           element={
-            token ? (
+            userId ? (
               <TripResultPage />
             ) : (
               <LoginPage
-                setToken={setToken}
+                setuserId={setuserId}
                 setUsername={setUsername}
                 username={username}
               />

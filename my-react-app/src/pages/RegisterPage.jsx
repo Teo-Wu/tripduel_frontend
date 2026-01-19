@@ -16,30 +16,36 @@ function RegisterPage() {
     }
 
     try {
-      const response = await fetch("https://backend-user-tripduel.onrender.com/api/auth/register", {
+      const response = await fetch("/api/users/sign-up", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
       });
 
+      // handle status codes manually
+      if (response.status === 409) {
+        setError("Username already exists. Please choose another.");
+        setSuccess("");
+        return;
+      } else if (!response.ok) {
+        setError(`Registration failed with status ${response.status}`);
+        setSuccess("");
+        return;
+      }
+
+      // parse JSON only if ok
       const data = await response.json();
 
-      if (response.ok) {
-        setError("");
-        setSuccess("Registered successfully! You can now log in.");
-        // Optionally redirect to login page
-        setTimeout(() => navigate("/login"), 1500);
-      } else {
-        setError(data.error || data.msg || "Registration failed");
-        setSuccess("");
-      }
+      setError("");
+      setSuccess("Registered successfully! You can now log in.");
+      setTimeout(() => navigate("/login"), 1500);
+
     } catch (err) {
       console.error(err);
       setError("Server error. Try again later.");
       setSuccess("");
     }
   };
-
   return (
     <>
     <div>
