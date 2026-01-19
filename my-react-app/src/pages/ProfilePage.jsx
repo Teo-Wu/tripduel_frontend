@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-function ProfilePage(userId) {
+function ProfilePage({userId}) {
   const [user, setUser] = useState({});
 
   // 1. This check is outside useEffect: controls rendering
@@ -21,7 +21,7 @@ function ProfilePage(userId) {
   }, [userId]);
 
   // 4. This check is outside useEffect: show loading state while data hasn't arrived
-  if (!user) return <p>Loading profile...</p>;
+  if (!user.username) return <p>Loading profile...</p>;
 
   // 5. Render profile once user data is available
   return (
