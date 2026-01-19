@@ -61,7 +61,7 @@ function App() {
           path="/mytrips"
           element={
             userId ? (
-              <MyTripsPage />
+              <MyTripsPage userId={userId}/>
             ) : (
               <LoginPage
                 setuserId={setuserId}

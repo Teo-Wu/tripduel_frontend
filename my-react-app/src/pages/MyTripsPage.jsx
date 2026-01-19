@@ -8,7 +8,7 @@ import {
 } from "../services/tripsService";
 import "../css/MyTripsPage.css";
 
-function MyTripsPage() {
+function MyTripsPage({userId}) {
   const [trips, setTrips] = useState([]);
   const [tripName, setTripName] = useState("");
   const [tripId, setTripId] = useState("");
@@ -22,13 +22,13 @@ function MyTripsPage() {
 
   // Load trips
   const loadTrips = async () => {
-    const data = await getMyTrips();
+    const data = await getMyTrips(userId);
     setTrips(data);
   };
 
   useEffect(() => {
-    loadTrips();
-  }, []);
+    if (userId) loadTrips(); // make sure userId is available
+  }, [userId]);
 
   // Filter trips
   const filteredTrips = useMemo(() => {
@@ -47,7 +47,7 @@ function MyTripsPage() {
       setMessage("Trip name already exists");
       return;
     }
-    await createTrip(tripName.trim());
+    await createTrip(tripName.trim(),userId);
     setTripName("");
     setShowCreateModal(false);
     setMessage("Trip created");
@@ -65,7 +65,7 @@ function MyTripsPage() {
       return;
     }
     try {
-      await joinTrip(tripId.trim());
+      await joinTrip(tripId.trim(),userId);
       setTripId("");
       setShowJoinModal(false);
       setMessage("Joined successfully");

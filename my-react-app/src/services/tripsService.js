@@ -1,36 +1,77 @@
-let allTrips = [];
-let myTrips = [];
+const BASE_URL = '/api/trips'; // proxy to real backend
 
-export function createTrip(name) {
-  const trip = {
-    id: crypto.randomUUID(),
-    name,
-    status: "CREATED",
-  };
-  allTrips.push(trip);
-  myTrips.push(trip);
-  return Promise.resolve(trip);
-}
+export async function createTrip(name, userId) {
+  const res = await fetch(BASE_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-User-ID': userId,
+    },
+    body: JSON.stringify({ name }),
+  });
 
-export function joinTrip(tripId) {
-  const trip = allTrips.find((t) => t.id === tripId);
-  if (!trip) {
-    return Promise.reject("Trip not found");
+  if (!res.ok) {
+    throw new Error(`Failed to create trip: ${res.statusText}`);
   }
-  if (myTrips.some((t) => t.id === tripId)) {
-    return Promise.reject("Already joined");
+
+  const trip = await res.json();
+  return trip;
+}
+
+export async function joinTrip(tripId, userId) {
+  const res = await fetch(`${BASE_URL}/${tripId}/join`, {
+    method: 'POST',
+    headers: {
+      'X-User-ID': userId,
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error(`Failed to join trip: ${res.statusText}`);
   }
-  myTrips.push(trip);
-  return Promise.resolve(trip);
+
+  const trip = await res.json();
+  return trip;
 }
 
-export function getMyTrips() {
-  return Promise.resolve([...myTrips]);
+export async function leaveTrip(tripId, userId) {
+  const res = await fetch(`${BASE_URL}/${tripId}/join`, {
+    method: 'DELETE',
+    headers: {
+      'X-User-ID': userId,
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error(`Failed to leave trip: ${res.statusText}`);
+  }
+
+  const trip = await res.json();
+  return trip;
 }
 
+export async function getMyTrips(userId) {
+  const res = await fetch(BASE_URL, {
+    method: 'GET',
+    headers: {
+      'X-User-ID': userId,
+    },
+  });
 
-export function deleteTrip(tripId) {
-  myTrips = myTrips.filter((t) => t.id !== tripId);
-  allTrips = allTrips.filter((t) => t.id !== tripId);
-  return Promise.resolve();
+  if (!res.ok) {
+    throw new Error(`Failed to fetch trips: ${res.statusText}`);
+  }
+
+  const trips = await res.json();
+  return trips;
+}
+
+export async function deleteTrip(tripId) {
+  const res = await fetch(`${BASE_URL}/${tripId}`, {
+    method: 'DELETE',
+  });
+
+  if (!res.ok && res.status !== 204) {
+    throw new Error(`Failed to delete trip: ${res.statusText}`);
+  }
 }
