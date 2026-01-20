@@ -14,7 +14,7 @@ import {
 import {
   uploadImage,
   listImages,
-  deleteImage,
+  // deleteImage,
 } from "../services/property/imageService";
 
 import "../css/TripEditView.css";
@@ -106,20 +106,20 @@ function TripEditView() {
     }
   };
 
-  // Handle delete
-  const handleDeleteImage = async () => {
-    if (!window.confirm("Delete this image?")) return;
-    if (!image?.id) return setMessage("No image to delete");
+  // // Handle delete
+  // const handleDeleteImage = async () => {
+  //   if (!window.confirm("Delete this image?")) return;
+  //   if (!image?.id) return setMessage("No image to delete");
 
-    try {
-      await deleteImage(image.id);
-      setImages(prev => prev.filter(i => i.id !== image.id));
-      setImage(null);
-      setMessage("Image deleted");
-    } catch {
-      setMessage("Failed to delete image");
-    }
-  };
+  //   try {
+  //     await deleteImage(image.id);
+  //     setImages(prev => prev.filter(i => i.id !== image.id));
+  //     setImage(null);
+  //     setMessage("Image deleted");
+  //   } catch {
+  //     setMessage("Failed to delete image");
+  //   }
+  // };
 
   // Filtered lists
   const filteredProperties = useMemo(
@@ -295,9 +295,9 @@ function TripEditView() {
           {image ? (
             <>
               <img src={image.url} alt="Uploaded" />
-              <button className="img-delete-btn" onClick={handleDeleteImage}>
+              {/* <button className="img-delete-btn" onClick={handleDeleteImage}>
                 Delete Image
-              </button>
+              </button> */}
             </>
           ) : (
             <p>No image for this selection</p>
