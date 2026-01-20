@@ -1,44 +1,66 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   getNextMatch,
   submitWinner,
-  resetRanking,
-  TOTAL_COMPARISONS,
 } from "../services/ranking/rankingApi";
 import { getImageById } from "../services/ranking/imageApi";
 
-export default function TripRankingPage({ tripId }) {
+export default function TripRankingPage({ userId }) {
   const navigate = useNavigate();
+  const { tripId } = useParams();
 
   const [leftImage, setLeftImage] = useState(null);
   const [rightImage, setRightImage] = useState(null);
+  const [comparisonId, setComparisonId] = useState(null);
   const [finished, setFinished] = useState(false);
   const [currentComparison, setCurrentComparison] = useState(1);
+  const [totalComparisons, setTotalComparisons] = useState(0);
+
 
   useEffect(() => {
-    resetRanking();
-    localStorage.removeItem("winners");
-    loadNextMatch();
+    async function init() {
+      try {
+        await loadNextMatch();
+      } catch (err) {
+        console.error("Failed to initialize ranking:", err);
+      }
+    }
+    init();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  function loadNextMatch() {
-    getNextMatch().then((match) => {
+  async function loadNextMatch() {
+    try {
+      const match = await getNextMatch(tripId, userId);
       if (!match) {
         setFinished(true);
         return;
       }
 
-      getImageById(match.leftImageId).then(setLeftImage);
-      getImageById(match.rightImageId).then(setRightImage);
-    });
+      setComparisonId(match.id);
+      setLeftImage(await getImageById(match.leftImageId));
+      setRightImage(await getImageById(match.rightImageId));
+    } catch (err) {
+      console.error("Error loading next match:", err);
+    }
   }
 
-  function vote(winnerId) {
-    submitWinner(winnerId).then(() => {
+  async function vote(side) {
+    if (!comparisonId) return;
+
+    try {
+      const winnerId =
+        side === "left"
+          ? leftImage.split("/").pop() // assumes backend uses UUID in URL
+          : rightImage.split("/").pop();
+
+      await submitWinner(comparisonId, winnerId, userId);
       setCurrentComparison((prev) => prev + 1);
-      loadNextMatch();
-    });
+      await loadNextMatch();
+    } catch (err) {
+      console.error("Failed to submit winner:", err);
+    }
   }
 
   return (
@@ -50,7 +72,6 @@ export default function TripRankingPage({ tripId }) {
         margin: "0 auto",
       }}
     >
-
       {!finished && (
         <>
           {/* IMAGES */}
@@ -81,14 +102,14 @@ export default function TripRankingPage({ tripId }) {
 
           {/* PROGRESS */}
           <p>
-            Comparison {currentComparison} / {TOTAL_COMPARISONS}
+            Comparison {currentComparison} 
           </p>
         </>
       )}
 
       {finished && (
         <>
-          <h2>Ranking finished 🎉</h2>
+          <h2>Ranking finished</h2>
           <button
             onClick={() => navigate(`/trips/${tripId}/result`)}
             style={{

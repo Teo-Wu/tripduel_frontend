@@ -1,27 +1,41 @@
-let round = 0;
-export const TOTAL_COMPARISONS = 3;
 
-const matches = [
-  { leftImageId: "hotel-1", rightImageId: "hotel-2" },
-  { leftImageId: "room-1", rightImageId: "room-2" },
-  { leftImageId: "swim-1", rightImageId: "swim-2" },
-];
-export function resetRanking() {
-  round = 0;
-}
-export function getNextMatch() {
-  if (round >= matches.length) {
-    return Promise.resolve(null);
-  }
+export async function getNextMatch(tripId, userId) {
+  const res = await fetch(`/api/matches/next?trip=${tripId}`, {
+    headers: {
+      "UserID": userId
+    }
+  });
 
-  const match = matches[round];
-  round++;
+  if (!res.ok) return null;
+  const data = await res.json();
+  if (!data?.id) return null;
 
-  return Promise.resolve(match);
+  return {
+    id: data.id,
+    leftImageId: data.image1,
+    rightImageId: data.image2
+  };
 }
 
-export function submitWinner(winnerImageId) {
-  // pretend backend accepted it
-  console.log("Winner:", winnerImageId);
-  return Promise.resolve({ success: true });
+export async function submitWinner(comparisonId, winnerId, userId) {
+  const res = await fetch(`/api/matches/next/${comparisonId}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "UserID": userId
+    },
+    body: JSON.stringify({ winner: winnerId })
+  });
+
+  if (!res.ok) throw new Error("Failed to submit winner");
+  return true;
+}
+
+export async function getRankingResult(tripId, userId) {
+  const res = await fetch(`/api/matches/result?trip=${tripId}`, {
+    headers: { "UserID": userId }
+  });
+  if (!res.ok) throw new Error("Failed to fetch ranking");
+  const data = await res.json();
+  return data.propertyIds; // array of ranked property UUIDs
 }

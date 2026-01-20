@@ -6,9 +6,10 @@ import {
   getMyTrips,
   deleteTrip,
 } from "../services/tripsService";
+import { getRankingResult } from "../services/ranking/rankingApi";
 import "../css/MyTripsPage.css";
 
-function MyTripsPage({userId}) {
+function MyTripsPage({ userId }) {
   const [trips, setTrips] = useState([]);
   const [tripName, setTripName] = useState("");
   const [tripId, setTripId] = useState("");
@@ -20,17 +21,47 @@ function MyTripsPage({userId}) {
 
   const navigate = useNavigate();
 
-  // Load trips
+  // Load trips and determine status
   const loadTrips = async () => {
-    const data = await getMyTrips(userId);
-    setTrips(data);
+    try {
+      const data = await getMyTrips(userId);
+
+      const tripsWithStatus = await Promise.all(
+       data.map(async (trip) => {
+          // Fetch images for this trip
+          const imagesRes = await fetch(`/api/images?trip=${trip.id}`);
+          const images = await imagesRes.json();
+          const imageCount = images.length;
+
+          if (imageCount <= 1) return { ...trip, status: "notReady" };
+
+
+          // Check if ranking is finished
+          try {
+            const result = await getRankingResult(trip.id, userId);
+            if (result && result.length > 0) {
+              return { ...trip, status: "finished" };
+            } else {
+              return { ...trip, status: "ready" };
+            }
+          } catch {
+            // If backend throws error, assume ranking not yet started
+            return { ...trip, status: "ready" };
+          }
+        })
+      );
+
+      setTrips(tripsWithStatus);
+    } catch (err) {
+      console.error("Failed to load trips:", err);
+      setMessage("Failed to load trips");
+    }
   };
 
   useEffect(() => {
-    if (userId) loadTrips(); // make sure userId is available
+    if (userId) loadTrips();
   }, [userId]);
 
-  // Filter trips
   const filteredTrips = useMemo(() => {
     return trips.filter((t) =>
       t.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -43,11 +74,15 @@ function MyTripsPage({userId}) {
       setMessage("Trip name cannot be empty");
       return;
     }
-    if (trips.some((t) => t.name.toLowerCase() === tripName.trim().toLowerCase())) {
+    if (
+      trips.some(
+        (t) => t.name.toLowerCase() === tripName.trim().toLowerCase()
+      )
+    ) {
       setMessage("Trip name already exists");
       return;
     }
-    await createTrip(tripName.trim(),userId);
+    await createTrip(tripName.trim(), userId);
     setTripName("");
     setShowCreateModal(false);
     setMessage("Trip created");
@@ -65,7 +100,7 @@ function MyTripsPage({userId}) {
       return;
     }
     try {
-      await joinTrip(tripId.trim(),userId);
+      await joinTrip(tripId.trim(), userId);
       setTripId("");
       setShowJoinModal(false);
       setMessage("Joined successfully");
@@ -118,12 +153,23 @@ function MyTripsPage({userId}) {
               >
                 Edit
               </button>
-              <button onClick={() => navigate(`/trips/${trip.id}/rank`)}>
+
+              {/* Rank button enabled only if ready */}
+              <button
+                onClick={() => navigate(`/trips/${trip.id}/rank`)}
+                disabled={trip.status === "notReady" || trip.status === "finished"}
+              >
                 Rank
               </button>
-              <button onClick={() => navigate(`/trips/${trip.id}/result`)}>
+
+              {/* Result button enabled only if finished */}
+              <button
+                onClick={() => navigate(`/trips/${trip.id}/result`)}
+                disabled={trip.status !== "finished"}
+              >
                 Result
               </button>
+
               <button
                 className="more-btn"
                 onClick={() =>
@@ -140,11 +186,21 @@ function MyTripsPage({userId}) {
                 <button onClick={() => navigator.clipboard.writeText(trip.id)}>
                   Copy Trip ID
                 </button>
-                <button className="danger" onClick={() => handleDeleteTrip(trip.id)}>
+                <button
+                  className="danger"
+                  onClick={() => handleDeleteTrip(trip.id)}
+                >
                   Delete Trip
                 </button>
               </div>
             )}
+
+            {/* STATUS TEXT */}
+            {trip.status === "notReady" && (
+              <p className="status-text">Add images to enable ranking</p>
+            )}
+            {trip.status === "ready" && <p className="status-text">Ready to rank</p>}
+            {trip.status === "finished" && <p className="status-text">Ranking finished 🎉</p>}
           </div>
         ))}
       </div>

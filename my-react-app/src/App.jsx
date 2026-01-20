@@ -119,7 +119,7 @@ function App() {
           path="/trips/:tripId/rank"
           element={
             userId ? (
-              <TripRankingPage />
+              <TripRankingPage userId={userId} />
             ) : (
               <LoginPage
                 setuserId={setuserId}
