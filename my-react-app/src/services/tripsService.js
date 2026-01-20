@@ -1,5 +1,11 @@
 const BASE_URL = '/api/trips'; // proxy to real backend
 
+export async function getTripById(tripId) {
+  const res = await fetch(`/api/trips/${tripId}`);
+  if (!res.ok) throw new Error("Failed to fetch trip");
+  return res.json(); // returns { id, name }
+}
+
 export async function createTrip(name, userId) {
   const res = await fetch(BASE_URL, {
     method: 'POST',

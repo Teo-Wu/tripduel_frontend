@@ -31,3 +31,10 @@ export async function deleteProperty(id) {
   if (!res.ok) throw new Error("Failed to delete property");
   return true;
 }
+
+// Get a property by ID
+export async function getPropertyById(id) {
+  const res = await fetch(`/api/properties/${id}`);
+  if (!res.ok) throw new Error("Failed to fetch property");
+  return res.json(); // returns { id, trip, name }
+}
