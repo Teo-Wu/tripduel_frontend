@@ -157,7 +157,7 @@ function MyTripsPage({ userId }) {
               {/* Rank button enabled only if ready */}
               <button
                 onClick={() => navigate(`/trips/${trip.id}/rank`)}
-                disabled={trip.status === "notReady" || trip.status === "finished"}
+                disabled={trip.status === "notReady" }
               >
                 Rank
               </button>
@@ -200,7 +200,7 @@ function MyTripsPage({ userId }) {
               <p className="status-text">Add images to enable ranking</p>
             )}
             {trip.status === "ready" && <p className="status-text">Ready to rank</p>}
-            {trip.status === "finished" && <p className="status-text">Ranking finished 🎉</p>}
+            {trip.status === "finished" && <p className="status-text">Ranked</p>}
           </div>
         ))}
       </div>
