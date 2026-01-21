@@ -1,7 +1,7 @@
-const BASE_URL = '/api/trips'; // proxy to real backend
+const BASE_URL = 'http://gruppe8.sccprak.netd.cs.tu-dresden.de/trips'; // proxy to real backend
 
 export async function getTripById(tripId) {
-  const res = await fetch(`/api/trips/${tripId}`);
+  const res = await fetch(`http://gruppe8.sccprak.netd.cs.tu-dresden.de/trips/${tripId}`);
   if (!res.ok) throw new Error("Failed to fetch trip");
   return res.json(); // returns { id, name }
 }

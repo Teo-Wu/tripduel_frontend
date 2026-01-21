@@ -11,7 +11,7 @@ function ProfilePage({userId}) {
     if (!userId) return;
 
     // 3. Fetch user profile from backend
-    fetch(`/api/users/${userId}`)
+    fetch(`http://gruppe8.sccprak.netd.cs.tu-dresden.de/users/${userId}`)
       .then(res => {
         if (!res.ok) throw new Error("Failed to fetch profile");
         return res.json();

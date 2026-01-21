@@ -16,7 +16,7 @@ function RegisterPage() {
     }
 
     try {
-      const response = await fetch("/api/users/sign-up", {
+      const response = await fetch( `http://gruppe8.sccprak.netd.cs.tu-dresden.de/users/sign-up`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),

@@ -16,7 +16,8 @@ export default function TripRankingPage({ userId }) {
   const [finished, setFinished] = useState(false);
   const [currentComparison, setCurrentComparison] = useState(1);
   const [totalComparisons, setTotalComparisons] = useState(0);
-
+  const [leftImageId, setLeftImageId] = useState(null);
+  const [rightImageId, setRightImageId] = useState(null);
 
   useEffect(() => {
     async function init() {
@@ -31,37 +32,34 @@ export default function TripRankingPage({ userId }) {
   }, []);
 
   async function loadNextMatch() {
-    try {
-      const match = await getNextMatch(tripId, userId);
-      if (!match) {
-        setFinished(true);
-        return;
-      }
-
-      setComparisonId(match.id);
-      setLeftImage(await getImageById(match.leftImageId));
-      setRightImage(await getImageById(match.rightImageId));
-    } catch (err) {
-      console.error("Error loading next match:", err);
-    }
+  const match = await getNextMatch(tripId, userId);
+  if (!match) {
+    setFinished(true);
+    return;
   }
+
+  setComparisonId(match.id);
+  setLeftImageId(match.leftImageId);
+  setRightImageId(match.rightImageId);
+
+  setLeftImage(await getImageById(match.leftImageId));
+  setRightImage(await getImageById(match.rightImageId));
+}
+
 
   async function vote(side) {
-    if (!comparisonId) return;
+  if (!comparisonId) return;
 
-    try {
-      const winnerId =
-        side === "left"
-          ? leftImage.split("/").pop() // assumes backend uses UUID in URL
-          : rightImage.split("/").pop();
-
-      await submitWinner(comparisonId, winnerId, userId);
-      setCurrentComparison((prev) => prev + 1);
-      await loadNextMatch();
-    } catch (err) {
-      console.error("Failed to submit winner:", err);
-    }
+  try {
+    const winnerId = side === "left" ? leftImageId : rightImageId;
+    console.log("winner ",{winnerId })
+    await submitWinner(comparisonId, winnerId, userId);
+    setCurrentComparison((prev) => prev + 1);
+    await loadNextMatch();
+  } catch (err) {
+    console.error("Failed to submit winner:", err);
   }
+}
 
   return (
     <div
