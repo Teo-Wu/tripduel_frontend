@@ -16,7 +16,7 @@ export default function TripRankingPage({ userId }) {
   const [finished, setFinished] = useState(false);
   const [currentComparison, setCurrentComparison] = useState(1);
   const [totalComparisons, setTotalComparisons] = useState(0);
-
+  const no_img_uploaded=true;
 
   useEffect(() => {
     async function init() {
@@ -37,7 +37,7 @@ export default function TripRankingPage({ userId }) {
         setFinished(true);
         return;
       }
-
+      no_img_uploaded=false;
       setComparisonId(match.id);
       setLeftImage(await getImageById(match.leftImageId));
       setRightImage(await getImageById(match.rightImageId));
@@ -109,8 +109,8 @@ export default function TripRankingPage({ userId }) {
 
       {finished && (
         <>
-          <h2>Ranking finished</h2>
-          <button
+        {no_img_uploaded ? (<h2>No images to compare</h2>):(<h2>Ranking successfully 🎉</h2>)}
+          <button 
             onClick={() => navigate(`/trips/${tripId}/result`)}
             style={{
               padding: "10px 20px",
