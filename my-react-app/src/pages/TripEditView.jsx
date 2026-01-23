@@ -68,7 +68,7 @@ function TripEditView() {
       const img = images.find(
         i => i.property === selectedProperty && i.category === selectedCategory
       );
-      setImage(img ? { ...img, url: `http://gruppe8.sccprak.netd.cs.tu-dresden.de/images/${img.id}` } : null);
+      setImage(img ? { ...img, url: `https://gruppe8.sccprak.netd.cs.tu-dresden.de/images/${img.id}` } : null);
     }
   }, [confirmed, selectedProperty, selectedCategory, images]);
 
@@ -90,7 +90,7 @@ function TripEditView() {
         category: selectedCategory,
         file,
       });
-      const imgWithUrl = { ...img, url: `http://gruppe8.sccprak.netd.cs.tu-dresden.de/images/${img.id}` };
+      const imgWithUrl = { ...img, url: `https://gruppe8.sccprak.netd.cs.tu-dresden.de/images/${img.id}` };
       setImages(prev => {
         // remove previous image for same property/category
         const filtered = prev.filter(

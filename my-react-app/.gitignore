@@ -11,4 +11,4 @@ dist/
 # OS files (optional)
 .DS_Store
 
-VITE_API_URL=http://gruppe8.sccprak.netd.cs.tu-dresden.de
+VITE_API_URL=https://gruppe8.sccprak.netd.cs.tu-dresden.de

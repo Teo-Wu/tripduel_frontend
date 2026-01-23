@@ -16,7 +16,7 @@ function LoginPage({ setuserId, setUsername, username }) {
     }
 
     try {
-      const response = await fetch("http://gruppe8.sccprak.netd.cs.tu-dresden.de/users/sign-in"
+      const response = await fetch("https://gruppe8.sccprak.netd.cs.tu-dresden.de/users/sign-in"
 
 , {
         method: "POST",

@@ -29,7 +29,7 @@ function MyTripsPage({ userId }) {
       const tripsWithStatus = await Promise.all(
        data.map(async (trip) => {
           // Fetch images for this trip
-          const imagesRes = await fetch(`http://gruppe8.sccprak.netd.cs.tu-dresden.de/images?trip=${trip.id}`);
+          const imagesRes = await fetch(`https://gruppe8.sccprak.netd.cs.tu-dresden.de/images?trip=${trip.id}`);
           const images = await imagesRes.json();
           const imageCount = images.length;
 

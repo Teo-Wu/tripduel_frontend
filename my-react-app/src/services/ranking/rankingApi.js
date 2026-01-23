@@ -1,6 +1,6 @@
 
 export async function getNextMatch(tripId, userId) {
-  const res = await fetch(`http://gruppe8.sccprak.netd.cs.tu-dresden.de/matches/next?trip=${tripId}`, {
+  const res = await fetch(`https://gruppe8.sccprak.netd.cs.tu-dresden.de/matches/next?trip=${tripId}`, {
     headers: {
       "UserID": userId
     }
@@ -18,7 +18,7 @@ export async function getNextMatch(tripId, userId) {
 }
 
 export async function submitWinner(comparisonId, winnerId, userId) {
-  const res = await fetch(`http://gruppe8.sccprak.netd.cs.tu-dresden.de/matches/next/${comparisonId}`, {
+  const res = await fetch(`https://gruppe8.sccprak.netd.cs.tu-dresden.de/matches/next/${comparisonId}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -32,7 +32,7 @@ export async function submitWinner(comparisonId, winnerId, userId) {
 }
 
 export async function getRankingResult(tripId, userId) {
-  const res = await fetch(`http://gruppe8.sccprak.netd.cs.tu-dresden.de/matches/result?trip=${tripId}`, {
+  const res = await fetch(`https://gruppe8.sccprak.netd.cs.tu-dresden.de/matches/result?trip=${tripId}`, {
     headers: { "UserID": userId }
   });
   if (!res.ok) throw new Error("Failed to fetch ranking");
