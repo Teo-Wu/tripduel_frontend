@@ -39,12 +39,18 @@ export default function TripRankingPage({ userId }) {
 
   async function vote(side) {
     if (!comparisonId) return;
-
+    console.log("voted for sides:",side);
+    console.log("leftimageId",leftImageId);
+    console.log("leftimage",leftImage);
+    console.log("rightimageId",rightImageId);
+    console.log("rightimage",rightImage);
     try {
       const winnerId =
-        side === "left" ? leftImage.id : rightImage.id;
+        side === "left" ? leftImage: rightImage;
 
       await submitWinner(comparisonId, winnerId, userId);
+      console.log("voting for", winnerId);
+
       setCurrentComparison((prev) => prev + 1);
       await loadNextMatch();
     } catch (err) {
