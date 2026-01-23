@@ -40,13 +40,16 @@ export default function TripRankingPage({ userId }) {
   async function vote(side) {
     if (!comparisonId) return;
     console.log("voted for sides:",side);
-    console.log("leftimageId",leftImageId);
+    //console.log("leftimageId",leftImageId);
     console.log("leftimage",leftImage);
-    console.log("rightimageId",rightImageId);
+    //console.log("rightimageId",rightImageId);
     console.log("rightimage",rightImage);
     try {
       const winnerId =
-        side === "left" ? leftImage: rightImage;
+        side === "left"
+          ? leftImage.split("/").pop() // assumes backend uses UUID in URL
+          : rightImage.split("/").pop();
+
 
       await submitWinner(comparisonId, winnerId, userId);
       console.log("voting for", winnerId);
